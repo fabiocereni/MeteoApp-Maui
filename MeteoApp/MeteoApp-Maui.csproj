@@ -51,6 +51,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.5-beta1" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -66,9 +67,6 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="Models\" />
-	</ItemGroup>
-	<ItemGroup>
-	  <BundleResource Include="Resources\.DS_Store" />
 	</ItemGroup>
 	<ItemGroup>
 	  <MauiXaml Condition=" '$(EnableDefaultXamlItems)' == 'true' " Update="MeteoItemPage.xaml">

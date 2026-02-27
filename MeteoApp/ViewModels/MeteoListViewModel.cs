@@ -1,26 +1,27 @@
 ﻿using System.Collections.ObjectModel;
+using Newtonsoft.Json;
 
 namespace MeteoApp
 {
     public class MeteoListViewModel : BaseViewModel
     {
         ObservableCollection<Entry> _entries;
+        private string _apiKey = "01b5604ef8c01cf27ed4ea08215a843c";
 
         public ObservableCollection<Entry> Entries
         {
             get { return _entries; }
-            set
-            {
-                _entries = value;
-                OnPropertyChanged();
-            }
+            set { _entries = value; OnPropertyChanged(); }
         }
 
         public MeteoListViewModel()
         {
             Entries = new ObservableCollection<Entry>();
 
-            for (var i = 0; i < 10; i++)
+            LoadDataAsync();
+
+            /*
+            for (var i = 0; i < 15; i++)
             {
                 var e = new Entry
                 {
@@ -28,7 +29,35 @@ namespace MeteoApp
                 };
 
                 Entries.Add(e);
+            }*/
+        }
+
+        private async void LoadDataAsync()
+        {
+            string[] cities = new string[] { "London", "New York", "Zurich" };
+
+            using HttpClient client = new HttpClient();
+
+            foreach (string city in cities)
+            {
+                string url = $"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={_apiKey}&units=metric";        
+
+                string responseJson = await client.GetStringAsync(url); // request to the API the weather data for the city
+
+                WeatherResponse weatherData = JsonConvert.DeserializeObject<WeatherResponse>(responseJson);
+                if (weatherData != null)
+                {
+                    Entries.Add(new Entry
+                    {
+                        CityName = weatherData.Name,
+                        Temperature = weatherData.Main.Temp,
+                        WeatherDescription = weatherData.Weather[0].Description
+                    });
+                }
+
+            
             }
         }
+
     }
 }

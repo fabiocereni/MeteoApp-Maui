@@ -6,13 +6,27 @@
             <ToolbarItem Text="Add" Clicked="OnItemAdded" />
         </ContentPage.ToolbarItems>
 
-        <ListView x:Name="zlistView" Margin="20" ItemSelected="OnListItemSelected" ItemsSource="{Binding Entries}">
-            <ListView.ItemTemplate>
+        <ListView x:Name="zlistView" 
+                Margin="20, 20, 20, 0" 
+                ItemSelected="OnListItemSelected" 
+                ItemsSource="{Binding Entries}"
+                SeparatorVisibility="Default"
+                SeparatorColor="#FF718DD5">
+                <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
-                        <StackLayout Margin="20,0,0,0" Orientation="Horizontal" HorizontalOptions="FillAndExpand">
-                            <Label Text="{Binding Id}" VerticalTextAlignment="Center" HorizontalOptions="StartAndExpand" />
-                            <Image Source="check.png" HorizontalOptions="End" IsVisible="{Binding Done}" />
+                        <StackLayout Margin="30,10,0,0" Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                            
+                            <StackLayout HorizontalOptions="StartAndExpand" VerticalOptions="Center">
+                                <Label Text="{Binding CityName}" FontSize="18" FontAttributes="Bold" />
+                                <Label Text="{Binding WeatherDescription}" FontSize="14" TextColor="Gray" />
+                            </StackLayout>
+
+                            <Label Text="{Binding Temperature, StringFormat='{0}°'}" 
+                                   VerticalTextAlignment="Center" 
+                                   HorizontalOptions="End" 
+                                   FontSize="24" FontAttributes="Bold" />
+
                         </StackLayout>
                     </ViewCell>
                 </DataTemplate>

@@ -42,6 +42,6 @@ public partial class MeteoListPage : Shell
 
     private async Task ShowPrompt()
     {
-        await DisplayAlert("Add City", "To Be Implemented", "OK");
+        await DisplayAlert("Add city", "To Be Implemented", "OK");
     }
 }
