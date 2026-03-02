@@ -6,7 +6,7 @@ namespace MeteoApp
     public class MeteoListViewModel : BaseViewModel
     {
         ObservableCollection<Entry> _entries;
-        private string _apiKey = "01b5604ef8c01cf27ed4ea08215a843c";
+        private string _apiKey = "YOUR_API_KEY_HERE"; // replace with your OpenWeatherMap API key
 
         public ObservableCollection<Entry> Entries
         {
