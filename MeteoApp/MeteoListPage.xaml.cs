@@ -32,6 +32,8 @@ public partial class MeteoListPage : Shell
             };
 
             Shell.Current.GoToAsync($"entrydetails", navigationParameter);
+
+            ((ListView)sender).SelectedItem = null; // unselect item after navigation, otherwise it remains white background selected when we return to the list page
         }
     }
 
