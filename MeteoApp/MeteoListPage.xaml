@@ -1,33 +1,51 @@
 ﻿<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MeteoApp.MeteoListPage">
-    <ContentPage>
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       x:Class="MeteoApp.MeteoListPage"
+       BackgroundColor="#000000"> <ContentPage BackgroundColor="#000000">
         <ContentPage.ToolbarItems>
             <ToolbarItem Text="Add" Clicked="OnItemAdded" />
         </ContentPage.ToolbarItems>
 
         <ListView x:Name="zlistView" 
-                Margin="20, 20, 20, 0" 
-                ItemSelected="OnListItemSelected" 
-                ItemsSource="{Binding Entries}"
-                SeparatorVisibility="Default"
-                SeparatorColor="#FF718DD5">
-                <ListView.ItemTemplate>
+                  Margin="15, 20, 15, 0" 
+                  ItemSelected="OnListItemSelected" 
+                  ItemsSource="{Binding Entries}"
+                  SeparatorVisibility="None"
+                  BackgroundColor="Transparent"
+                  HasUnevenRows="True">
+            <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
-                        <StackLayout Margin="30,10,0,0" Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                        <Frame BackgroundColor="#1E5B94" 
+                               CornerRadius="20" 
+                               Margin="0, 0, 0, 15" 
+                               Padding="20, 15"
+                               HasShadow="False"
+                               BorderColor="Transparent">
                             
-                            <StackLayout HorizontalOptions="StartAndExpand" VerticalOptions="Center">
-                                <Label Text="{Binding CityName}" FontSize="18" FontAttributes="Bold" />
-                                <Label Text="{Binding WeatherDescription}" FontSize="14" TextColor="Gray" />
-                            </StackLayout>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" /> <ColumnDefinition Width="Auto" /> </Grid.ColumnDefinitions>
 
-                            <Label Text="{Binding Temperature, StringFormat='{0}°'}" 
-                                   VerticalTextAlignment="Center" 
-                                   HorizontalOptions="End" 
-                                   FontSize="24" FontAttributes="Bold" />
+                                <StackLayout Grid.Column="0" VerticalOptions="Center">
+                                    <Label Text="{Binding CityName}" 
+                                           FontSize="22" 
+                                           FontAttributes="Bold" 
+                                           TextColor="White" />
+                                    <Label Text="{Binding WeatherDescription}" 
+                                           FontSize="14" 
+                                           TextColor="#D1E5F9" 
+                                           Margin="0, 5, 0, 0"/>
+                                </StackLayout>
 
-                        </StackLayout>
+                                <Label Grid.Column="1" 
+                                       Text="{Binding Temperature, StringFormat='{0}°'}" 
+                                       VerticalTextAlignment="Center" 
+                                       FontSize="48" 
+                                       FontAttributes="Bold" 
+                                       TextColor="White" />
+                            </Grid>
+                        </Frame>
                     </ViewCell>
                 </DataTemplate>
             </ListView.ItemTemplate>
