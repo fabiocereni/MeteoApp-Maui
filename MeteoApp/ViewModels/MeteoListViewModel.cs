@@ -1,13 +1,12 @@
 ﻿using System.Collections.ObjectModel;
 using Newtonsoft.Json;
-using Microsoft.Maui.Devices.Sensors;
 
 namespace MeteoApp
 {
     public class MeteoListViewModel : BaseViewModel
     {
         ObservableCollection<Entry> _entries;
-        private string _apiKey = "YOUR_API_KEY"; // change with your OpenWeatherMap API key
+        private string _apiKey = "edf8fe112ff3580933587b76edc24e10"; // change with your OpenWeatherMap API key
 
         public ObservableCollection<Entry> Entries
         {
@@ -23,7 +22,7 @@ namespace MeteoApp
 
         private async void LoadDataAsync()
         {
-            string[] cities = new string[] { "London", "New York", "Zurich" };
+            string[] cities = new string[] { "London", "New York", "Zurich"};
             using HttpClient client = new HttpClient();
 
             foreach (string city in cities)
@@ -43,7 +42,12 @@ namespace MeteoApp
                             {
                                 CityName = weatherData.Name,
                                 Temperature = Math.Round(weatherData.Main.Temp),
-                                WeatherDescription = weatherData.Weather[0].Description
+                                WeatherDescription = weatherData.Weather[0].Description,
+                                
+                                Humidity = weatherData.Main.Humidity,
+                                WindSpeed = weatherData.Wind.Speed,
+                                cloudiness = weatherData.Clouds.All,
+                                WeatherIcon = $"https://openweathermap.org/img/wn/{weatherData.Weather[0].Icon}@4x.png"
                             });
                         });
                     }
@@ -78,7 +82,12 @@ namespace MeteoApp
                             {
                                 CityName = weatherDataGps.Name + " (Current Location)",
                                 Temperature = Math.Round(weatherDataGps.Main.Temp),
-                                WeatherDescription = weatherDataGps.Weather[0].Description
+                                WeatherDescription = weatherDataGps.Weather[0].Description,
+
+                                Humidity = weatherDataGps.Main.Humidity,
+                                WindSpeed = weatherDataGps.Wind.Speed,
+                                cloudiness = weatherDataGps.Clouds.All,
+                                WeatherIcon = $"https://openweathermap.org/img/wn/{weatherDataGps.Weather[0].Icon}@4x.png"
                             });
                         });
                     }
