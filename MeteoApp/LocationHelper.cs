@@ -1,9 +1,3 @@
-using System;
-using System.Threading.Tasks;
-using Microsoft.Maui.ApplicationModel;
-using Microsoft.Maui.Devices.Sensors;
-using Microsoft.Maui.Controls;
-
 namespace MeteoApp
 {
     public class LocationHelper
