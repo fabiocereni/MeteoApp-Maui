@@ -6,7 +6,7 @@ namespace MeteoApp
     public class MeteoListViewModel : BaseViewModel
     {
         ObservableCollection<Entry> _entries;
-        private string _apiKey = "edf8fe112ff3580933587b76edc24e10"; // change with your OpenWeatherMap API key
+        private string _apiKey = "YOUR_API_KEY"; // change with your OpenWeatherMap API key
 
         public ObservableCollection<Entry> Entries
         {
@@ -17,50 +17,43 @@ namespace MeteoApp
         public MeteoListViewModel()
         {
             Entries = new ObservableCollection<Entry>();
-            LoadDataAsync();
+            _ = LoadDataAsync();
         }
 
-        private async void LoadDataAsync()
+        private async Task LoadDataAsync()
         {
             string[] cities = new string[] { "London", "New York", "Zurich"};
             using HttpClient client = new HttpClient();
+
+            await App.database.DeleteAllEntriesAsync();
+            var existingEntries = await App.database.GetEntriesAsync();
+            System.Diagnostics.Debug.WriteLine("Existing entries in database after deletion: " + existingEntries.Count);
 
             foreach (string city in cities)
             {
                 string url = $"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={_apiKey}&units=metric";        
 
-                try 
+                string responseJson = await client.GetStringAsync(url);
+                WeatherResponse weatherData = JsonConvert.DeserializeObject<WeatherResponse>(responseJson);
+
+                Entry entry = new Entry
                 {
-                    string responseJson = await client.GetStringAsync(url); 
-                    WeatherResponse weatherData = JsonConvert.DeserializeObject<WeatherResponse>(responseJson);
-                    
-                    if (weatherData != null)
-                    {
-                        MainThread.BeginInvokeOnMainThread(() => 
-                        {
-                            Entries.Add(new Entry
-                            {
-                                CityName = weatherData.Name,
-                                Temperature = Math.Round(weatherData.Main.Temp),
-                                WeatherDescription = weatherData.Weather[0].Description,
-                                
-                                Humidity = weatherData.Main.Humidity,
-                                WindSpeed = weatherData.Wind.Speed,
-                                cloudiness = weatherData.Clouds.All,
-                                WeatherIcon = $"https://openweathermap.org/img/wn/{weatherData.Weather[0].Icon}@4x.png"
-                            });
-                        });
-                    }
-                }
-                catch (HttpRequestException ex)
-                {
-                    System.Diagnostics.Debug.WriteLine($"Errore API (es. 401) per {city}: {ex.Message}");
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine($"Errore generico per {city}: {ex.Message}");
-                }
+                    CityName = weatherData.Name,
+                    Temperature = Math.Round(weatherData.Main.Temp),
+                    WeatherDescription = weatherData.Weather[0].Description,
+                    Humidity = weatherData.Main.Humidity,
+                    WindSpeed = weatherData.Wind.Speed,
+                    cloudiness = weatherData.Clouds.All,
+                    WeatherIcon = $"https://openweathermap.org/img/wn/{weatherData.Weather[0].Icon}@4x.png"
+                };
+
+                await App.database.SaveEntryAsync(entry);
+                System.Diagnostics.Debug.WriteLine($"Saved entry for {entry.CityName} - {entry.Temperature}°C to database.");
+                Entries.Add(entry);
             }
+
+            existingEntries = await App.database.GetEntriesAsync();
+            System.Diagnostics.Debug.WriteLine("Entries in database after loading: " + existingEntries.Count);
 
             LocationHelper helper = new LocationHelper();
             var location = await helper.getCurrentLocationAsync();
