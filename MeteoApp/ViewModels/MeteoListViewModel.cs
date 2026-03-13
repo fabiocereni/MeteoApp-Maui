@@ -33,7 +33,7 @@ namespace MeteoApp
             if (existingEntries.Count == 0) {
                 foreach (string city in cities)
                 {
-                    string url = $"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={_apiKey}&units=metric";        
+                    string url = $"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={_apiKey}&units=metric&lang=it";        
 
                     string responseJson = await client.GetStringAsync(url);
                     WeatherResponse weatherData = JsonConvert.DeserializeObject<WeatherResponse>(responseJson);
@@ -69,7 +69,7 @@ namespace MeteoApp
             
             if (location != null)
             {
-                string urlGps = $"https://api.openweathermap.org/data/2.5/weather?lat={location.Latitude}&lon={location.Longitude}&appid={_apiKey}&units=metric";
+                string urlGps = $"https://api.openweathermap.org/data/2.5/weather?lat={location.Latitude}&lon={location.Longitude}&appid={_apiKey}&units=metric&lang=it";
 
                 try
                 {
@@ -108,7 +108,7 @@ namespace MeteoApp
         public async Task addCityAsync(string cityName)
         {
             using HttpClient client = new HttpClient();
-            string url = $"https://api.openweathermap.org/data/2.5/weather?q={cityName}&appid={_apiKey}&units=metric";
+            string url = $"https://api.openweathermap.org/data/2.5/weather?q={cityName}&appid={_apiKey}&units=metric&lang=it";
 
             string responseJson = await client.GetStringAsync(url);
             WeatherResponse weatherData = JsonConvert.DeserializeObject<WeatherResponse>(responseJson);
@@ -140,7 +140,7 @@ namespace MeteoApp
         {
             try
             {
-                return new RegionInfo(countryCode).DisplayName; // in this way, We get the country name in the language of the device
+                return new RegionInfo(countryCode).DisplayName;
             }
             catch
             {
