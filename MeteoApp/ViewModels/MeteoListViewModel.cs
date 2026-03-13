@@ -17,50 +17,51 @@ namespace MeteoApp
         public MeteoListViewModel()
         {
             Entries = new ObservableCollection<Entry>();
-            LoadDataAsync();
+            _ = LoadDataAsync();
         }
 
-        private async void LoadDataAsync()
+        private async Task LoadDataAsync()
         {
             string[] cities = new string[] { "London", "New York", "Zurich"};
             using HttpClient client = new HttpClient();
 
-            foreach (string city in cities)
-            {
-                string url = $"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={_apiKey}&units=metric";        
+            // await App.database.DeleteAllEntriesAsync();
+            var existingEntries = await App.database.GetEntriesAsync();
+            System.Diagnostics.Debug.WriteLine("Existing entries in database after deletion: " + existingEntries.Count);
 
-                try 
+            if (existingEntries.Count == 0) {
+                foreach (string city in cities)
                 {
-                    string responseJson = await client.GetStringAsync(url); 
+                    string url = $"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={_apiKey}&units=metric";        
+
+                    string responseJson = await client.GetStringAsync(url);
                     WeatherResponse weatherData = JsonConvert.DeserializeObject<WeatherResponse>(responseJson);
-                    
-                    if (weatherData != null)
+
+                    Entry entry = new Entry
                     {
-                        MainThread.BeginInvokeOnMainThread(() => 
-                        {
-                            Entries.Add(new Entry
-                            {
-                                CityName = weatherData.Name,
-                                Temperature = Math.Round(weatherData.Main.Temp),
-                                WeatherDescription = weatherData.Weather[0].Description,
-                                
-                                Humidity = weatherData.Main.Humidity,
-                                WindSpeed = weatherData.Wind.Speed,
-                                cloudiness = weatherData.Clouds.All,
-                                WeatherIcon = $"https://openweathermap.org/img/wn/{weatherData.Weather[0].Icon}@4x.png"
-                            });
-                        });
-                    }
+                        CityName = weatherData.Name,
+                        Temperature = Math.Round(weatherData.Main.Temp),
+                        WeatherDescription = weatherData.Weather[0].Description,
+                        Humidity = weatherData.Main.Humidity,
+                        WindSpeed = weatherData.Wind.Speed,
+                        cloudiness = weatherData.Clouds.All,
+                        WeatherIcon = $"https://openweathermap.org/img/wn/{weatherData.Weather[0].Icon}@4x.png"
+                    };
+
+                    await App.database.SaveEntryAsync(entry);
+                    System.Diagnostics.Debug.WriteLine($"Saved entry for {entry.CityName} - {entry.Temperature}°C to database.");
+                    Entries.Add(entry);
                 }
-                catch (HttpRequestException ex)
+            } else
+            {
+                foreach (var entry in existingEntries)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Errore API (es. 401) per {city}: {ex.Message}");
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine($"Errore generico per {city}: {ex.Message}");
+                    Entries.Add(entry);
                 }
             }
+
+            existingEntries = await App.database.GetEntriesAsync();
+            System.Diagnostics.Debug.WriteLine("Entries in database after loading: " + existingEntries.Count);
 
             LocationHelper helper = new LocationHelper();
             var location = await helper.getCurrentLocationAsync();
@@ -101,6 +102,30 @@ namespace MeteoApp
                     System.Diagnostics.Debug.WriteLine($"Errore generico GPS: {ex.Message}");
                 }
             }
+        }
+
+        public async Task addCityAsync(string cityName)
+        {
+            using HttpClient client = new HttpClient();
+            string url = $"https://api.openweathermap.org/data/2.5/weather?q={cityName}&appid={_apiKey}&units=metric";
+
+            string responseJson = await client.GetStringAsync(url);
+            WeatherResponse weatherData = JsonConvert.DeserializeObject<WeatherResponse>(responseJson);
+
+            Entry entry = new Entry
+            {
+                CityName = weatherData.Name,
+                Temperature = Math.Round(weatherData.Main.Temp),
+                WeatherDescription = weatherData.Weather[0].Description,
+                Humidity = weatherData.Main.Humidity,
+                WindSpeed = weatherData.Wind.Speed,
+                cloudiness = weatherData.Clouds.All,
+                WeatherIcon = $"https://openweathermap.org/img/wn/{weatherData.Weather[0].Icon}@4x.png"
+            };
+
+            await App.database.SaveEntryAsync(entry);
+            System.Diagnostics.Debug.WriteLine($"Saved entry for {entry.CityName} - {entry.Temperature}°C to database.");
+            Entries.Add(entry);
         }
     }
 }

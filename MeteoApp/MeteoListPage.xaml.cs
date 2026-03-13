@@ -44,6 +44,21 @@ public partial class MeteoListPage : Shell
 
     private async Task ShowPrompt()
     {
-        await DisplayAlert("Add city", "To Be Implemented", "OK");
+        string cityName = await DisplayPromptAsync(
+            "Add city",
+            "Enter the name of the city you want to add:",
+            "OK",
+            "Cancel",
+            "City name",
+            -1,
+            Keyboard.Text
+        );
+
+        if (!string.IsNullOrWhiteSpace(cityName))
+        {
+            var viewModel = BindingContext as MeteoListViewModel;
+            await viewModel.addCityAsync(cityName);
+        }
+        
     }
 }
