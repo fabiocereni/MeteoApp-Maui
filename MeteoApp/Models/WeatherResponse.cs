@@ -7,6 +7,7 @@ namespace MeteoApp
         public WeatherData[] Weather { get; set; } // list of weather conditions
         public WindData Wind { get; set; } // wind data
         public CloudsData Clouds { get; set; } // cloud data
+        public SysData Sys { get; set; }
     }
 
     public class MainData
@@ -29,5 +30,10 @@ namespace MeteoApp
     {
         public string Description { get; set; }
         public string Icon { get; set; }
+    }
+
+    public class SysData
+    {
+        public string Country { get; set; }
     }
 }

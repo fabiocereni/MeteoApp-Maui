@@ -42,6 +42,15 @@ public partial class MeteoListPage : Shell
          _ = ShowPrompt();
     }
 
+    private async void OnItemDeleted(object sender, EventArgs e)
+    {
+        var menuItem = sender as MenuItem;
+        var entry = menuItem.CommandParameter as Entry;
+
+        var viewModel = BindingContext as MeteoListViewModel;
+        await viewModel.deleteCityAsync(entry);
+    }
+
     private async Task ShowPrompt()
     {
         string cityName = await DisplayPromptAsync(
@@ -59,6 +68,5 @@ public partial class MeteoListPage : Shell
             var viewModel = BindingContext as MeteoListViewModel;
             await viewModel.addCityAsync(cityName);
         }
-        
     }
 }

@@ -53,6 +53,11 @@ namespace MeteoApp
             }
         }
 
+        public Task<int> DeleteEntryAsync(Entry entry)
+        {
+            return _connection.DeleteAsync(entry);
+        }
+
         public Task<int> DeleteAllEntriesAsync()
         {
             return _connection.DeleteAllAsync<Entry>();

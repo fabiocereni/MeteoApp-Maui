@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using Newtonsoft.Json;
+using System.Globalization;
 
 namespace MeteoApp
 {
@@ -39,7 +40,7 @@ namespace MeteoApp
 
                     Entry entry = new Entry
                     {
-                        CityName = weatherData.Name,
+                        CityName = $"{weatherData.Name}, {GetCountryName(weatherData.Sys.Country)}",
                         Temperature = Math.Round(weatherData.Main.Temp),
                         WeatherDescription = weatherData.Weather[0].Description,
                         Humidity = weatherData.Main.Humidity,
@@ -81,7 +82,7 @@ namespace MeteoApp
                         {
                             Entries.Insert(0, new Entry
                             {
-                                CityName = weatherDataGps.Name + " (Current Location)",
+                                CityName = $"{weatherDataGps.Name}, {GetCountryName(weatherDataGps.Sys.Country)}" + " (Current Location)",
                                 Temperature = Math.Round(weatherDataGps.Main.Temp),
                                 WeatherDescription = weatherDataGps.Weather[0].Description,
 
@@ -114,7 +115,7 @@ namespace MeteoApp
 
             Entry entry = new Entry
             {
-                CityName = weatherData.Name,
+                CityName = $"{weatherData.Name}, {GetCountryName(weatherData.Sys.Country)}",
                 Temperature = Math.Round(weatherData.Main.Temp),
                 WeatherDescription = weatherData.Weather[0].Description,
                 Humidity = weatherData.Main.Humidity,
@@ -126,6 +127,25 @@ namespace MeteoApp
             await App.database.SaveEntryAsync(entry);
             System.Diagnostics.Debug.WriteLine($"Saved entry for {entry.CityName} - {entry.Temperature}°C to database.");
             Entries.Add(entry);
+        }
+
+        public async Task deleteCityAsync(Entry entry)
+        {
+            await App.database.DeleteEntryAsync(entry);
+            System.Diagnostics.Debug.WriteLine($"Deleted entry for {entry.CityName} from database.");
+            Entries.Remove(entry);
+        }
+
+        private static string GetCountryName(string countryCode)
+        {
+            try
+            {
+                return new RegionInfo(countryCode).DisplayName; // in this way, We get the country name in the language of the device
+            }
+            catch
+            {
+                return countryCode;
+            }
         }
     }
 }
