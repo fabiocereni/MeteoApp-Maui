@@ -1,65 +1,85 @@
 ﻿<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
        x:Class="MeteoApp.MeteoListPage"
-       BackgroundColor="#000000"> <ContentPage BackgroundColor="#000000">
+       BackgroundColor="#000000"> 
+    
+    <ContentPage BackgroundColor="#000000">
         <ContentPage.ToolbarItems>
             <ToolbarItem Text="Add" Clicked="OnItemAdded" />
         </ContentPage.ToolbarItems>
 
-        <ListView x:Name="zlistView" 
-                  Margin="15, 20, 15, 0" 
-                  ItemSelected="OnListItemSelected" 
-                  ItemsSource="{Binding Entries}"
-                  SeparatorVisibility="None"
-                  BackgroundColor="Transparent"
-                  HasUnevenRows="True">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <ViewCell>
-                        <SwipeView>
-                            <SwipeView.RightItems>
-                                <SwipeItems>
-                                    <SwipeItem Text="Delete" 
-                                               BackgroundColor="Red"
-                                               Clicked="OnItemDeleted"
-                                               CommandParameter="{Binding .}" />
-                                </SwipeItems>
-                            </SwipeView.RightItems>
-                                
-                            <Frame BackgroundColor="#1E5B94" 
-                                CornerRadius="20" 
-                                Margin="0, 0, 0, 15" 
-                                Padding="20, 15"
-                                HasShadow="False"
-                                BorderColor="Transparent">
-                                
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" /> <ColumnDefinition Width="Auto" /> </Grid.ColumnDefinitions>
+        <Grid>
+            
+            <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}">
+                <CollectionView x:Name="zlistView" 
+                                Margin="15, 20, 15, 0" 
+                                SelectionMode="Single"
+                                SelectionChanged="OnListItemSelected" 
+                                ItemsSource="{Binding Entries}"
+                                BackgroundColor="Transparent">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <SwipeView>
+                                <SwipeView.RightItems>
+                                    <SwipeItems>
+                                        <SwipeItem Text="Delete" 
+                                                   BackgroundColor="Red"
+                                                   Clicked="OnItemDeleted"
+                                                   CommandParameter="{Binding .}" />
+                                    </SwipeItems>
+                                </SwipeView.RightItems>
+                                    
+                                <Frame BackgroundColor="#1E5B94" 
+                                       CornerRadius="20" 
+                                       Margin="0, 0, 0, 15" 
+                                       Padding="20, 15"
+                                       HasShadow="False"
+                                       BorderColor="Transparent">
+                                    
+                                    <Frame.Shadow>
+                                        <Shadow Brush="Black" 
+                                                Offset="5, 5" 
+                                                Radius="10" 
+                                                Opacity="0.5" />
+                                    </Frame.Shadow>
+                                    
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" /> 
+                                            <ColumnDefinition Width="Auto" /> 
+                                        </Grid.ColumnDefinitions>
 
-                                    <StackLayout Grid.Column="0" VerticalOptions="Center">
-                                        <Label Text="{Binding CityName}" 
-                                            FontSize="22" 
-                                            FontAttributes="Bold" 
-                                            TextColor="White" />
-                                        <Label Text="{Binding WeatherDescription}" 
-                                            FontSize="14" 
-                                            TextColor="#D1E5F9" 
-                                            Margin="0, 5, 0, 0"/>
-                                    </StackLayout>
+                                        <StackLayout Grid.Column="0" VerticalOptions="Center">
+                                            <Label Text="{Binding CityName}" 
+                                                   FontSize="22" 
+                                                   FontAttributes="Bold" 
+                                                   TextColor="White" />
+                                            <Label Text="{Binding WeatherDescription}" 
+                                                   FontSize="14" 
+                                                   TextColor="#D1E5F9" 
+                                                   Margin="0, 5, 0, 0"/>
+                                        </StackLayout>
 
-                                    <Label Grid.Column="1" 
-                                        Text="{Binding Temperature, StringFormat='{0}°'}" 
-                                        VerticalTextAlignment="Center" 
-                                        FontSize="48" 
-                                        FontAttributes="Bold" 
-                                        TextColor="White" />
-                                </Grid>
-                            </Frame>
-                        </SwipeView>
-                    </ViewCell>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+                                        <Label Grid.Column="1" 
+                                               Text="{Binding Temperature, StringFormat='{0}°'}" 
+                                               VerticalTextAlignment="Center" 
+                                               FontSize="48" 
+                                               FontAttributes="Bold" 
+                                               TextColor="White" />
+                                    </Grid>
+                                </Frame>
+                            </SwipeView>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </RefreshView>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" 
+                               IsVisible="{Binding IsBusy}"
+                               Color="White"
+                               HorizontalOptions="Center" 
+                               VerticalOptions="Center" />
+        </Grid>
+        
     </ContentPage>
 </Shell>

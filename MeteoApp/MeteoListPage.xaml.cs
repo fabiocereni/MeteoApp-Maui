@@ -12,6 +12,17 @@ public partial class MeteoListPage : Shell
         BindingContext = new MeteoListViewModel();
     }
 
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+
+        if (BindingContext is MeteoListViewModel viewModel)
+        {
+            await viewModel.LoadDataAsync();
+        }
+
+    }
+
     private void RegisterRoutes()
     {
         Routes.Add("entrydetails", typeof(MeteoItemPage));
@@ -20,11 +31,13 @@ public partial class MeteoListPage : Shell
             Routing.RegisterRoute(item.Key, item.Value);
     }
 
-    private void OnListItemSelected(object sender, SelectedItemChangedEventArgs e)
+    private void OnListItemSelected(object sender, SelectionChangedEventArgs e)
     {
-        if (e.SelectedItem != null)
+        var selectedItem = e.CurrentSelection.FirstOrDefault();
+
+        if (selectedItem != null)
         {
-            Entry entry = e.SelectedItem as Entry;
+            Entry entry = selectedItem as Entry;
 
             var navigationParameter = new Dictionary<string, object>
             {
@@ -33,7 +46,8 @@ public partial class MeteoListPage : Shell
 
             Shell.Current.GoToAsync($"entrydetails", navigationParameter);
 
-            ((ListView)sender).SelectedItem = null; // unselect item after navigation, otherwise it remains white background selected when we return to the list page
+            // Deseleziona l'elemento dopo la navigazione per rimuovere l'evidenziazione
+            ((CollectionView)sender).SelectedItem = null; 
         }
     }
 

@@ -6,7 +6,7 @@
              Title="{Binding Entry.CityName}">
              
     <ScrollView>
-        <StackLayout x:Name="MainLayout" Spacing="10" Margin="20, 30, 20, 20">
+        <VerticalStackLayout x:Name="MainLayout" Spacing="10" Margin="20, 30, 20, 20">
             
             <Label Text="{Binding Entry.CityName}"
                    FontSize="45"
@@ -32,7 +32,9 @@
                    TextColor="#D1E5F9"
                    HorizontalOptions="Center"
                    TextTransform="Uppercase" 
-                   Margin="0, 0, 0, 40" /> <Border BackgroundColor="#1C1C1E" 
+                   Margin="0, 0, 0, 40" /> 
+                   
+            <Border BackgroundColor="#1C1C1E" 
                     Stroke="Transparent" 
                     Padding="20">
                 
@@ -53,6 +55,6 @@
                 </Grid>
             </Border>
 
-        </StackLayout>
+        </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

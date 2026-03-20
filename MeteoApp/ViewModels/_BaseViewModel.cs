@@ -7,6 +7,13 @@ namespace MeteoApp
 	{
 		public event PropertyChangedEventHandler PropertyChanged;
 
+		private bool _isBusy;
+		public bool IsBusy
+		{
+			get => _isBusy;
+			set { _isBusy = value; OnPropertyChanged(); }
+		}
+
 		protected BaseViewModel()
 		{
 		}
