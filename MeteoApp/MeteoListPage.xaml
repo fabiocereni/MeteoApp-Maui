@@ -9,12 +9,10 @@
         </ContentPage.ToolbarItems>
 
         <Grid>
-            
             <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}">
                 <CollectionView x:Name="zlistView" 
                                 Margin="15, 20, 15, 0" 
-                                SelectionMode="Single"
-                                SelectionChanged="OnListItemSelected" 
+                                SelectionMode="None" 
                                 ItemsSource="{Binding Entries}"
                                 BackgroundColor="Transparent">
                     <CollectionView.ItemTemplate>
@@ -36,6 +34,10 @@
                                        HasShadow="False"
                                        BorderColor="Transparent">
                                     
+                                    <Frame.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnCardTapped" CommandParameter="{Binding .}" />
+                                    </Frame.GestureRecognizers>
+
                                     <Frame.Shadow>
                                         <Shadow Brush="Black" 
                                                 Offset="5, 5" 
