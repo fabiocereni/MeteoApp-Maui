@@ -3,13 +3,13 @@
 [QueryProperty(nameof(Entry), "Entry")]
 public partial class MeteoItemPage : ContentPage
 {
-    Entry entry;
+    private Entry _entry;
     public Entry Entry
     {
-        get => entry;
+        get => _entry;
         set
         {
-            entry = value;
+            _entry = value;
             OnPropertyChanged();
         }
     }
@@ -18,10 +18,5 @@ public partial class MeteoItemPage : ContentPage
     {
         InitializeComponent();
         BindingContext = this;
-    }
-
-    protected override void OnAppearing()
-    {
-        base.OnAppearing();
     }
 }

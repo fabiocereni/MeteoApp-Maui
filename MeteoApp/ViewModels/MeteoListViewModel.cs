@@ -7,12 +7,11 @@ namespace MeteoApp
     {
         ObservableCollection<Entry> _entries;
         private readonly WeatherApiService _apiService;
-
         private bool _isRefreshing;
 
         public bool IsRefreshing
         {
-            get { return _isRefreshing; }
+            get => _isRefreshing;
             set { _isRefreshing = value; OnPropertyChanged(); }
         }
 
@@ -20,7 +19,7 @@ namespace MeteoApp
 
         public ObservableCollection<Entry> Entries
         {
-            get { return _entries; }
+            get => _entries;
             set { _entries = value; OnPropertyChanged(); }
         }
 
@@ -34,110 +33,103 @@ namespace MeteoApp
         private async Task RefreshDataAsync()
         {
             IsRefreshing = true;
-            Entries.Clear();
-            await LoadDataAsync(); 
-            IsRefreshing = false;
+            try
+            {
+                Entries.Clear();
+                await LoadDataAsync();
+            }
+            finally
+            {
+                IsRefreshing = false;
+            }
         }
 
         public async Task LoadDataAsync()
         {
-            if (IsBusy)
-                return;
-            IsBusy = true;
+            if (IsBusy) return;
 
-            if (Entries.Count > 0) 
-                return;
-
-            string[] cities = new string[] { "London", "New York", "Zurich"};
-
-            var existingEntries = await App.database.GetEntriesAsync();
-            System.Diagnostics.Debug.WriteLine("Existing entries in database after deletion: " + existingEntries.Count);
-
-            if (existingEntries.Count == 0) 
+            try
             {
-                foreach (string city in cities)
+                IsBusy = true;
+
+                if (Entries.Count > 0) return;
+
+                var existingEntries = await App.database.GetEntriesAsync();
+
+                if (existingEntries.Count == 0)
+                {
+                    string[] cities = { "London", "New York", "Zurich" };
+                    foreach (string city in cities)
+                    {
+                        try
+                        {
+                            var weatherData = await _apiService.GetWeatherByCityAsync(city);
+                            if (weatherData != null)
+                            {
+                                var entry = CreateEntryFromWeather(weatherData);
+                                await App.database.SaveEntryAsync(entry);
+                                Entries.Add(entry);
+                            }
+                        }
+                        catch { }
+                    }
+                }
+                else
+                {
+                    foreach (var entry in existingEntries)
+                    {
+                        Entries.Add(entry);
+                    }
+                }
+
+                var helper = new LocationHelper();
+                var location = await helper.getCurrentLocationAsync();
+
+                if (location != null)
                 {
                     try
                     {
-                        WeatherResponse weatherData = await _apiService.GetWeatherByCityAsync(city);
-
-                        if (weatherData != null)
+                        var weatherDataGps = await _apiService.GetWeatherByLocationAsync(location.Latitude, location.Longitude);
+                        if (weatherDataGps != null)
                         {
-                            Entry entry = CreateEntryFromWeather(weatherData);
-                            await App.database.SaveEntryAsync(entry);
-                            System.Diagnostics.Debug.WriteLine($"Saved entry for {entry.CityName} - {entry.Temperature}°C to database.");
-                            Entries.Add(entry);
+                            MainThread.BeginInvokeOnMainThread(() =>
+                            {
+                                var gpsEntry = CreateEntryFromWeather(weatherDataGps);
+                                gpsEntry.CityName += " (Current Location)";
+                                if (!Entries.Any(e => e.CityName.Contains("(Current Location)")))
+                                {
+                                    Entries.Insert(0, gpsEntry);
+                                }
+                            });
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Errore nel caricamento di {city}: {ex.Message}");
-                    }
-                }
-            } 
-            else
-            {
-                foreach (var entry in existingEntries)
-                {
-                    Entries.Add(entry);
+                    catch { }
                 }
             }
-
-            existingEntries = await App.database.GetEntriesAsync();
-            System.Diagnostics.Debug.WriteLine("Entries in database after loading: " + existingEntries.Count);
-
-            LocationHelper helper = new LocationHelper();
-            var location = await helper.getCurrentLocationAsync();
-            
-            if (location != null)
+            finally
             {
-                try
-                {
-                    WeatherResponse weatherDataGps = await _apiService.GetWeatherByLocationAsync(location.Latitude, location.Longitude);
-                    
-                    if (weatherDataGps != null)
-                    {
-                        MainThread.BeginInvokeOnMainThread(() => 
-                        {
-                            Entry gpsEntry = CreateEntryFromWeather(weatherDataGps);
-                            gpsEntry.CityName += " (Current Location)";
-                            Entries.Insert(0, gpsEntry);
-                        });
-                    }
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine($"Errore API GPS: {ex.Message}");
-                }
+                IsBusy = false;
             }
-
-            IsBusy = false;
         }
 
         public async Task addCityAsync(string cityName)
         {
             try
             {
-                WeatherResponse weatherData = await _apiService.GetWeatherByCityAsync(cityName);
-
+                var weatherData = await _apiService.GetWeatherByCityAsync(cityName);
                 if (weatherData != null)
                 {
-                    Entry entry = CreateEntryFromWeather(weatherData);
+                    var entry = CreateEntryFromWeather(weatherData);
                     await App.database.SaveEntryAsync(entry);
-                    System.Diagnostics.Debug.WriteLine($"Saved entry for {entry.CityName} - {entry.Temperature}°C to database.");
                     Entries.Add(entry);
                 }
             }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Errore aggiunta città: {ex.Message}");
-            }
+            catch { }
         }
 
         public async Task deleteCityAsync(Entry entry)
         {
             await App.database.DeleteEntryAsync(entry);
-            System.Diagnostics.Debug.WriteLine($"Deleted entry for {entry.CityName} from database.");
             Entries.Remove(entry);
         }
 
