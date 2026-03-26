@@ -2,25 +2,34 @@
 
 public partial class App : Application
 {
-
-	// Singleton database instance
-	private static Database _database;
-	public static Database database
-	{
-		get
-		{
-			if (_database == null)
-			{
-				_database = new Database();
-			}
-			return _database;
-		}
-	} 
+    private static Database _database;
+    public static Database database
+    {
+        get
+        {
+            if (_database == null)
+            {
+                try 
+                {
+                    _database = new Database();
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"ERRORE DB: {ex.Message}");
+                    return null; 
+                }
+            }
+            return _database;
+        }
+    } 
 
     public App()
-	{
-		InitializeComponent();
+    {
+        InitializeComponent();
+    }
 
-		MainPage = new MeteoListPage();
-	}
+    protected override Window CreateWindow(IActivationState? activationState)
+    {
+        return new Window(new MeteoListPage());
+    }
 }

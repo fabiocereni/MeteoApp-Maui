@@ -48,6 +48,8 @@ namespace MeteoApp
         {
             if (IsBusy) return;
 
+            if (App.database == null) return;
+
             try
             {
                 IsBusy = true;

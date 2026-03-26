@@ -30,5 +30,8 @@
 	<string>Assets.xcassets/appicon.appiconset</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>We need your location in order to...</string>
+
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Abbiamo bisogno della tua posizione per le previsioni meteo locali.</string>
 </dict>
 </plist>
