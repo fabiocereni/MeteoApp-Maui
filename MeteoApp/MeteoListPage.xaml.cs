@@ -25,6 +25,7 @@ public partial class MeteoListPage : Shell
     private void RegisterRoutes()
     {
         Routes.Add("entrydetails", typeof(MeteoItemPage));
+        Routes.Add("meteomap", typeof(MeteoMapPage));
 
         foreach (var item in Routes)
             Routing.RegisterRoute(item.Key, item.Value);
@@ -45,7 +46,7 @@ public partial class MeteoListPage : Shell
 
     private void OnItemAdded(object sender, EventArgs e)
     {
-         _ = ShowPrompt();
+        _ = ShowPrompt();
     }
 
     private async void OnItemDeleted(object sender, EventArgs e)
