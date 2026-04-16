@@ -41,4 +41,18 @@
     <Color x:Key="Blue200Accent">#72ACF1</Color>
     <Color x:Key="Blue300Accent">#A7CBF6</Color>
 
+    <!-- Weather Semantic Colors -->
+    <Color x:Key="WeatherSunny">#FFB300</Color>
+    <Color x:Key="WeatherRainy">#4A90E2</Color>
+    <Color x:Key="WeatherCloudy">#90A4AE</Color>
+    <Color x:Key="WeatherStormy">#455A64</Color>
+    <Color x:Key="TemperatureHot">#FF5252</Color>
+    <Color x:Key="TemperatureCold">#448AFF</Color>
+
+    <!-- App Backgrounds & Surfaces (Useful for Light/Dark Mode) -->
+    <Color x:Key="LightBackground">#F5F5F7</Color>
+    <Color x:Key="DarkBackground">#121212</Color>
+    <Color x:Key="LightSurface">#FFFFFF</Color>
+    <Color x:Key="DarkSurface">#1E1E1E</Color>
+
 </ResourceDictionary>

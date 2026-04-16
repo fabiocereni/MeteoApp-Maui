@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
+             x:Class="MeteoApp.AddCityPage"
+             BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}"
+             Title="Aggiungi Città">
+
+    <Grid RowDefinitions="Auto, Auto, Auto, *" Margin="20, 40, 20, 20" RowSpacing="15">
+        
+        <VerticalStackLayout Grid.Row="0" Spacing="5">
+            <Label Text="Nuova Città" FontSize="32" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" HorizontalOptions="Center" />
+            <Label Text="Cerca per nome o tocca un punto sulla mappa" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray300}}" HorizontalOptions="Center" HorizontalTextAlignment="Center" />
+        </VerticalStackLayout>
+
+        <Frame Grid.Row="1" BackgroundColor="{AppThemeBinding Light={StaticResource LightSurface}, Dark={StaticResource DarkSurface}}" BorderColor="Transparent" CornerRadius="10" Padding="15, 5">
+            <Entry x:Name="CityNameEntry" 
+                   Placeholder="Es: Milano, Roma..." 
+                   TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" 
+                   PlaceholderColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                   ClearButtonVisibility="WhileEditing" />
+        </Frame>
+
+        <HorizontalStackLayout Grid.Row="2" Spacing="10" HorizontalOptions="Center">
+            <Button Text="Annulla" BackgroundColor="Transparent" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray300}}" Clicked="OnCancelClicked" />
+            <Button Text="Aggiungi da testo" BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource Primary}}" TextColor="White" CornerRadius="10" Clicked="OnAddTextClicked" />
+        </HorizontalStackLayout>
+
+        <Frame Grid.Row="3" CornerRadius="20" Padding="0" IsClippedToBounds="True" BorderColor="Transparent" Margin="0, 10, 0, 0">
+            <maps:Map x:Name="SearchMap" 
+                      MapType="Street" 
+                      IsShowingUser="False" 
+                      MapClicked="OnMapClicked" /> 
+        </Frame>
+        
+    </Grid>
+</ContentPage>

@@ -1,9 +1,9 @@
 ﻿<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
        x:Class="MeteoApp.MeteoListPage"
-       BackgroundColor="#000000"> 
+       BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}"> 
     
-    <ContentPage BackgroundColor="#000000">
+    <ContentPage BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}">
         <ContentPage.ToolbarItems>
             <ToolbarItem Text="Add" Clicked="OnItemAdded" />
         </ContentPage.ToolbarItems>
@@ -27,7 +27,7 @@
                                     </SwipeItems>
                                 </SwipeView.RightItems>
                                     
-                                <Frame BackgroundColor="#1E5B94" 
+                                <Frame BackgroundColor="{AppThemeBinding Light={StaticResource LightSurface}, Dark={StaticResource DarkSurface}}" 
                                        CornerRadius="20" 
                                        Margin="0, 0, 0, 15" 
                                        Padding="20, 15"
@@ -39,7 +39,7 @@
                                     </Frame.GestureRecognizers>
 
                                     <Frame.Shadow>
-                                        <Shadow Brush="Black" 
+                                        <Shadow Brush="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Black}}" 
                                                 Offset="5, 5" 
                                                 Radius="10" 
                                                 Opacity="0.5" />
@@ -55,10 +55,10 @@
                                             <Label Text="{Binding CityName}" 
                                                    FontSize="22" 
                                                    FontAttributes="Bold" 
-                                                   TextColor="White" />
+                                                   TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
                                             <Label Text="{Binding WeatherDescription}" 
                                                    FontSize="14" 
-                                                   TextColor="#D1E5F9" 
+                                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray300}}" 
                                                    Margin="0, 5, 0, 0"/>
                                         </StackLayout>
 
@@ -67,7 +67,7 @@
                                                VerticalTextAlignment="Center" 
                                                FontSize="48" 
                                                FontAttributes="Bold" 
-                                               TextColor="White" />
+                                               TextColor="{StaticResource WeatherRainy}" />
                                     </Grid>
                                 </Frame>
                             </SwipeView>
@@ -78,7 +78,7 @@
 
             <ActivityIndicator IsRunning="{Binding IsBusy}" 
                                IsVisible="{Binding IsBusy}"
-                               Color="White"
+                               Color="{StaticResource WeatherRainy}"
                                HorizontalOptions="Center" 
                                VerticalOptions="Center" />
         </Grid>

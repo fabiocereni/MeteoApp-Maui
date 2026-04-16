@@ -2,7 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MeteoApp.MeteoItemPage"
-             BackgroundColor="#000000"
+             BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}"
              Title="{Binding Entry.CityName}">
              
     <ScrollView>
@@ -13,7 +13,7 @@
                    FontAttributes="Bold"
                    HorizontalOptions="Center"
                    HorizontalTextAlignment="Center"
-                   TextColor="White" />
+                   TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
 
             <Image Source="{Binding Entry.WeatherIcon}"
                    WidthRequest="150"
@@ -24,17 +24,17 @@
                    FontSize="100"
                    FontAttributes="Bold"
                    HorizontalOptions="Center"
-                   TextColor="White" 
+                   TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" 
                    Margin="0, -30, 0, 0" />
 
             <Label Text="{Binding Entry.WeatherDescription}"
                    FontSize="24"
-                   TextColor="#D1E5F9"
+                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray300}}"
                    HorizontalOptions="Center"
                    TextTransform="Uppercase" 
                    Margin="0, 0, 0, 40" /> 
                    
-            <Border BackgroundColor="#1C1C1E" 
+            <Border BackgroundColor="{AppThemeBinding Light={StaticResource LightSurface}, Dark={StaticResource DarkSurface}}" 
                     Stroke="Transparent" 
                     Padding="20">
                 
@@ -44,13 +44,13 @@
 
                 <Grid ColumnDefinitions="*, *, *" RowDefinitions="Auto, Auto" RowSpacing="5">
                     
-                    <Label Grid.Row="0" Grid.Column="0" Text="Umidità" TextColor="Gray" FontSize="14" HorizontalOptions="Center" />
-                    <Label Grid.Row="0" Grid.Column="1" Text="Nuvole" TextColor="Gray" FontSize="14" HorizontalOptions="Center" />
-                    <Label Grid.Row="0" Grid.Column="2" Text="Vento" TextColor="Gray" FontSize="14" HorizontalOptions="Center" />
+                    <Label Grid.Row="0" Grid.Column="0" Text="Umidità" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" FontSize="14" HorizontalOptions="Center" />
+                    <Label Grid.Row="0" Grid.Column="1" Text="Nuvole" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" FontSize="14" HorizontalOptions="Center" />
+                    <Label Grid.Row="0" Grid.Column="2" Text="Vento" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" FontSize="14" HorizontalOptions="Center" />
 
-                    <Label Grid.Row="1" Grid.Column="0" Text="{Binding Entry.Humidity, StringFormat='{0}%'}" TextColor="White" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center" />
-                    <Label Grid.Row="1" Grid.Column="1" Text="{Binding Entry.cloudiness, StringFormat='{0}%'}" TextColor="White" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center" />
-                    <Label Grid.Row="1" Grid.Column="2" Text="{Binding Entry.WindSpeed, StringFormat='{0} m/s'}" TextColor="White" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center" />
+                    <Label Grid.Row="1" Grid.Column="0" Text="{Binding Entry.Humidity, StringFormat='{0}%'}" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center" />
+                    <Label Grid.Row="1" Grid.Column="1" Text="{Binding Entry.cloudiness, StringFormat='{0}%'}" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center" />
+                    <Label Grid.Row="1" Grid.Column="2" Text="{Binding Entry.WindSpeed, StringFormat='{0} m/s'}" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center" />
                     
                 </Grid>
             </Border>
