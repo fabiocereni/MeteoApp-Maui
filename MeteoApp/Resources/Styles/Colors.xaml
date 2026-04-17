@@ -50,9 +50,9 @@
     <Color x:Key="TemperatureCold">#448AFF</Color>
 
     <!-- App Backgrounds & Surfaces (Useful for Light/Dark Mode) -->
-    <Color x:Key="LightBackground">#F5F5F7</Color>
-    <Color x:Key="DarkBackground">#121212</Color>
-    <Color x:Key="LightSurface">#FFFFFF</Color>
-    <Color x:Key="DarkSurface">#1E1E1E</Color>
+    <Color x:Key="LightBackground">White</Color>
+    <Color x:Key="DarkBackground">#FF353535</Color>
+    <Color x:Key="LightSurface">#FF9FFFEA</Color>
+    <Color x:Key="DarkSurface">Black</Color>
 
 </ResourceDictionary>

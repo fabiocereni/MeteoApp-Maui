@@ -44,9 +44,12 @@ public partial class MeteoListPage : Shell
         }
     }
 
-    private void OnItemAdded(object sender, EventArgs e)
+    private async void OnItemAdded(object sender, EventArgs e)
     {
-        _ = ShowPrompt();
+        if (BindingContext is MeteoListViewModel viewModel)
+        {
+            await Navigation.PushModalAsync(new AddCityPage(viewModel));
+        }
     }
 
     private async void OnItemDeleted(object sender, EventArgs e)
@@ -56,24 +59,5 @@ public partial class MeteoListPage : Shell
 
         var viewModel = BindingContext as MeteoListViewModel;
         await viewModel.deleteCityAsync(entry);
-    }
-
-    private async Task ShowPrompt()
-    {
-        string cityName = await DisplayPromptAsync(
-            "Add city",
-            "Enter the name of the city you want to add:",
-            "OK",
-            "Cancel",
-            "City name",
-            -1,
-            Keyboard.Text
-        );
-
-        if (!string.IsNullOrWhiteSpace(cityName))
-        {
-            var viewModel = BindingContext as MeteoListViewModel;
-            await viewModel.addCityAsync(cityName);
-        }
     }
 }

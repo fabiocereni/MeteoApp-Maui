@@ -123,10 +123,22 @@ namespace MeteoApp
                 {
                     var entry = CreateEntryFromWeather(weatherData);
                     await App.database.SaveEntryAsync(entry);
-                    Entries.Add(entry);
+                    
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        Entries.Add(entry);
+                    });
+                }
+                else
+                {
+                    await App.Current.MainPage.DisplayAlert("Errore", $"Non è stato possibile trovare i dati meteo per {cityName}", "OK");
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Errore in addCityAsync: {ex.Message}");
+                await App.Current.MainPage.DisplayAlert("Errore", "Si è verificato un errore durante l'aggiunta della città.", "OK");
+            }
         }
 
         public async Task deleteCityAsync(Entry entry)
@@ -137,6 +149,7 @@ namespace MeteoApp
 
         private Entry CreateEntryFromWeather(WeatherResponse data)
         {
+            System.Diagnostics.Debug.WriteLine($"Città: {data.Name}, Nazione: {data.Sys.Country}");
             return new Entry
             {
                 CityName = $"{data.Name}, {GetCountryName(data.Sys.Country)}",

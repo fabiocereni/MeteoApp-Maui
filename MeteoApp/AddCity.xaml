@@ -26,11 +26,13 @@
             <Button Text="Aggiungi da testo" BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource Primary}}" TextColor="White" CornerRadius="10" Clicked="OnAddTextClicked" />
         </HorizontalStackLayout>
 
-        <Frame Grid.Row="3" CornerRadius="20" Padding="0" IsClippedToBounds="True" BorderColor="Transparent" Margin="0, 10, 0, 0">
+        <Frame Grid.Row="3" CornerRadius="20" Padding="0" IsClippedToBounds="True" BorderColor="Transparent" Margin="0, 10, 0, 0" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
             <maps:Map x:Name="SearchMap" 
                       MapType="Street" 
                       IsShowingUser="False" 
-                      MapClicked="OnMapClicked" /> 
+                      MapClicked="OnMapClicked"
+                      HorizontalOptions="FillAndExpand"
+                      VerticalOptions="FillAndExpand" /> 
         </Frame>
         
     </Grid>
