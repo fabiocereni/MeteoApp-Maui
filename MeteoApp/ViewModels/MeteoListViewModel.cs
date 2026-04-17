@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
 using Plugin.LocalNotification;
 using Plugin.LocalNotification.Core.Models;
 
@@ -54,7 +55,6 @@ namespace MeteoApp
             try
             {
                 IsBusy = true;
-                if (Entries.Count > 0) return;
 
                 var existingEntries = await App.database.GetEntriesAsync();
 
@@ -78,9 +78,42 @@ namespace MeteoApp
                 }
                 else
                 {
+                    if (Entries.Count == 0)
+                    {
+                        foreach (var entry in existingEntries)
+                        {
+                            Entries.Add(entry);
+                        }
+                    }
+
                     foreach (var entry in existingEntries)
                     {
-                        Entries.Add(entry);
+                        try
+                        {
+                            string queryName = entry.CityName.Split(',')[0].Trim();
+                            var weatherData = await _apiService.GetWeatherByCityAsync(queryName);
+                            if (weatherData != null)
+                            {
+                                var updated = CreateEntryFromWeather(weatherData);
+                                
+                                var entryToUpdate = Entries.FirstOrDefault(e => e.Id == entry.Id);
+                                if (entryToUpdate != null)
+                                {
+                                    entryToUpdate.Temperature = updated.Temperature;
+                                    entryToUpdate.WeatherDescription = updated.WeatherDescription;
+                                    entryToUpdate.WeatherIcon = updated.WeatherIcon;
+                                    entryToUpdate.Humidity = updated.Humidity;
+                                    entryToUpdate.WindSpeed = updated.WindSpeed;
+                                    entryToUpdate.cloudiness = updated.cloudiness;
+
+                                    await App.database.SaveEntryAsync(entryToUpdate);
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Errore durante l'aggiornamento di {entry.CityName}: {ex.Message}");
+                        }
                     }
                 }
 
@@ -98,7 +131,18 @@ namespace MeteoApp
                             {
                                 var gpsEntry = CreateEntryFromWeather(weatherDataGps);
                                 gpsEntry.CityName += " (Current Location)";
-                                if (!Entries.Any(e => e.CityName.Contains("(Current Location)")))
+                                
+                                var existingGps = Entries.FirstOrDefault(e => e.CityName.Contains("(Current Location)"));
+                                if (existingGps != null)
+                                {
+                                    existingGps.Temperature = gpsEntry.Temperature;
+                                    existingGps.WeatherDescription = gpsEntry.WeatherDescription;
+                                    existingGps.WeatherIcon = gpsEntry.WeatherIcon;
+                                    existingGps.Humidity = gpsEntry.Humidity;
+                                    existingGps.WindSpeed = gpsEntry.WindSpeed;
+                                    existingGps.cloudiness = gpsEntry.cloudiness;
+                                }
+                                else
                                 {
                                     Entries.Insert(0, gpsEntry);
                                 }

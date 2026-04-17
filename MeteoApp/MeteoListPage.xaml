@@ -1,9 +1,17 @@
 ﻿<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:local="clr-namespace:MeteoApp"
        x:Class="MeteoApp.MeteoListPage"
        BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}"> 
     
     <ContentPage BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}">
+        
+        <ContentPage.Resources>
+            <ResourceDictionary>
+                <local:TemperatureColorConverter x:Key="TempColorConverter" />
+            </ResourceDictionary>
+        </ContentPage.Resources>
+
         <ContentPage.ToolbarItems>
             <ToolbarItem Text="Add" Clicked="OnItemAdded" />
         </ContentPage.ToolbarItems>
@@ -67,7 +75,7 @@
                                                VerticalTextAlignment="Center" 
                                                FontSize="48" 
                                                FontAttributes="Bold" 
-                                               TextColor="{StaticResource WeatherRainy}" />
+                                               TextColor="{Binding Temperature, Converter={StaticResource TempColorConverter}}" />
                                     </Grid>
                                 </Frame>
                             </SwipeView>
