@@ -1,5 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Globalization;
+using Plugin.LocalNotification;
+using Plugin.LocalNotification.Core.Models;
 
 namespace MeteoApp
 {
@@ -47,13 +49,11 @@ namespace MeteoApp
         public async Task LoadDataAsync()
         {
             if (IsBusy) return;
-
             if (App.database == null) return;
 
             try
             {
                 IsBusy = true;
-
                 if (Entries.Count > 0) return;
 
                 var existingEntries = await App.database.GetEntriesAsync();
@@ -128,16 +128,19 @@ namespace MeteoApp
                     {
                         Entries.Add(entry);
                     });
+
+                    // Richiama il controllo per la notifica locale
+                    await CheckTemperatureAndNotifyAsync(entry);
                 }
                 else
                 {
-                    await App.Current.MainPage.DisplayAlert("Errore", $"Non è stato possibile trovare i dati meteo per {cityName}", "OK");
+                    await App.Current.MainPage.DisplayAlert("Errore", $"Non è stato possibile trovare i dati per {cityName}", "OK");
                 }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Errore in addCityAsync: {ex.Message}");
-                await App.Current.MainPage.DisplayAlert("Errore", "Si è verificato un errore durante l'aggiunta della città.", "OK");
+                await App.Current.MainPage.DisplayAlert("Errore", "Si è verificato un errore.", "OK");
             }
         }
 
@@ -149,7 +152,6 @@ namespace MeteoApp
 
         private Entry CreateEntryFromWeather(WeatherResponse data)
         {
-            System.Diagnostics.Debug.WriteLine($"Città: {data.Name}, Nazione: {data.Sys.Country}");
             return new Entry
             {
                 CityName = $"{data.Name}, {GetCountryName(data.Sys.Country)}",
@@ -171,6 +173,43 @@ namespace MeteoApp
             catch
             {
                 return countryCode;
+            }
+        }
+
+        private async Task CheckTemperatureAndNotifyAsync(Entry entry)
+        {
+            // Controlla i permessi usando il percorso corretto per la versione 14
+            if (await Plugin.LocalNotification.LocalNotificationCenter.Current.AreNotificationsEnabled() == false)
+            {
+                await Plugin.LocalNotification.LocalNotificationCenter.Current.RequestNotificationPermission();
+            }
+
+            Plugin.LocalNotification.Core.Models.NotificationRequest request = null;
+
+            if (entry.Temperature < 0)
+            {
+                request = new Plugin.LocalNotification.Core.Models.NotificationRequest
+                {
+                    NotificationId = Math.Abs(entry.CityName.GetHashCode()),
+                    Title = "Allerta Freddo! ❄️",
+                    Description = $"{entry.CityName}, {entry.Temperature}°C allerta freddo",
+                    Schedule = new Plugin.LocalNotification.Core.Models.NotificationRequestSchedule { NotifyTime = DateTime.Now.AddSeconds(2) }
+                };
+            }
+            else if (entry.Temperature > 25)
+            {
+                request = new Plugin.LocalNotification.Core.Models.NotificationRequest
+                {
+                    NotificationId = Math.Abs(entry.CityName.GetHashCode()),
+                    Title = "Allerta Caldo! ☀️",
+                    Description = $"{entry.CityName}, {entry.Temperature}°C allerta caldo",
+                    Schedule = new Plugin.LocalNotification.Core.Models.NotificationRequestSchedule { NotifyTime = DateTime.Now.AddSeconds(2) }
+                };
+            }
+
+            if (request != null)
+            {
+                await Plugin.LocalNotification.LocalNotificationCenter.Current.Show(request);
             }
         }
     }
