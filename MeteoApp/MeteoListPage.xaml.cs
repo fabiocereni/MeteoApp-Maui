@@ -3,13 +3,14 @@
 public partial class MeteoListPage : Shell
 {
     public Dictionary<string, Type> Routes { get; private set; } = new Dictionary<string, Type>();
-
     public MeteoListPage()
     {
         InitializeComponent();
+        
+        var viewModel = new MeteoListViewModel();
+        BindingContext = viewModel;
+        
         RegisterRoutes();
-
-        BindingContext = new MeteoListViewModel();
     }
 
     protected override async void OnAppearing()
