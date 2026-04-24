@@ -25,7 +25,11 @@ public partial class App : Application
 
     public App()
     {
-        InitializeComponent();
+       InitializeComponent();
+    
+        var unit = Preferences.Get("temp_unit", "C");
+
+        MainPage = new MeteoListPage();
     }
 
     protected override Window CreateWindow(IActivationState? activationState)

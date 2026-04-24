@@ -28,9 +28,9 @@ namespace MeteoApp
             }
         }
 
-        public async Task<WeatherResponse> GetWeatherByCityAsync(string city)
+        public async Task<WeatherResponse> GetWeatherByCityAsync(string city, string unit = "metric")
         {
-            string url = $"{_baseUrl}?q={city}&appid={_apiKey}&units=metric&lang=it";
+            string url = $"{_baseUrl}?q={city}&appid={_apiKey}&units={unit}&lang=it";
             return await _client.GetFromJsonAsync<WeatherResponse>(url);
         }
 

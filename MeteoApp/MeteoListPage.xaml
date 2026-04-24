@@ -13,8 +13,11 @@
         </ContentPage.Resources>
 
         <ContentPage.ToolbarItems>
-            <ToolbarItem Text="Add" Clicked="OnItemAdded" />
-        </ContentPage.ToolbarItems>
+    <ToolbarItem Text="Add" Clicked="OnItemAdded" />
+    
+    <ToolbarItem Text="{Binding TempUnit, StringFormat='Unità: {0}'}" 
+                 Command="{Binding ToggleUnitCommand}" />
+</ContentPage.ToolbarItems>
 
         <Grid>
             <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}">
@@ -71,7 +74,7 @@
                                         </StackLayout>
 
                                         <Label Grid.Column="1" 
-                                               Text="{Binding Temperature, StringFormat='{0}°'}" 
+                                               Text="{Binding Source={RelativeSource AncestorType={x:Type local:MeteoListViewModel}}, Path=TempUnit, StringFormat='{0} {1}', BindingContext={Binding Temperature}}"
                                                VerticalTextAlignment="Center" 
                                                FontSize="48" 
                                                FontAttributes="Bold" 
