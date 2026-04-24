@@ -13,11 +13,15 @@
         </ContentPage.Resources>
 
         <ContentPage.ToolbarItems>
-    <ToolbarItem Text="Add" Clicked="OnItemAdded" />
-    
+    <ToolbarItem Text="Add" 
+                 Clicked="OnItemAdded" 
+                 Order="Primary" 
+                 Priority="0" />
     <ToolbarItem Text="{Binding TempUnit, StringFormat='Unità: {0}'}" 
-                 Command="{Binding ToggleUnitCommand}" />
-</ContentPage.ToolbarItems>
+                 Command="{Binding ToggleUnitCommand}" 
+                 Order="Primary" 
+                 Priority="1" />
+    </ContentPage.ToolbarItems>
 
         <Grid>
             <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}">
