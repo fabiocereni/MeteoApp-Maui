@@ -12,6 +12,22 @@ namespace MeteoApp
         private readonly WeatherApiService _apiService;
         private bool _isRefreshing;
 
+        private string _tempUnit;
+    public string TempUnit
+    {
+        get => _tempUnit;
+        set
+        {
+            if (_tempUnit != value)
+            {
+                _tempUnit = value;
+                SettingsService.SetTemperatureUnit(value);
+                OnPropertyChanged();
+                _ = LoadDataAsync(); 
+            }
+        }
+    }
+
         public bool IsRefreshing
         {
             get => _isRefreshing;
