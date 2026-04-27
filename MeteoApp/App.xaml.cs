@@ -32,8 +32,5 @@ public partial class App : Application
         MainPage = new MeteoListPage();
     }
 
-    protected override Window CreateWindow(IActivationState? activationState)
-    {
-        return new Window(new MeteoListPage());
-    }
+ 
 }

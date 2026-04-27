@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using Plugin.LocalNotification;
 using Plugin.LocalNotification.Core.Models;
+using MeteoApp.Services;
 
 namespace MeteoApp
 {

@@ -14,6 +14,8 @@ namespace MeteoApp
             InitializeBaseUrl();
         }
 
+        private readonly string _forecastUrl = "https://api.openweathermap.org/data/2.5/forecast";
+
         private void InitializeBaseUrl()
         {
             _baseUrl = "https://api.openweathermap.org/data/2.5/weather";
@@ -38,6 +40,12 @@ namespace MeteoApp
         {
             string url = $"{_baseUrl}?lat={lat}&lon={lon}&appid={_apiKey}&units=metric&lang=it";
             return await _client.GetFromJsonAsync<WeatherResponse>(url);
+        }
+
+        public async Task<ForecastResponse> GetForecastByCityAsync(string city, string unit = "metric")
+        {
+            string url = $"{_forecastUrl}?q={city}&appid={_apiKey}&units={unit}&lang=it";
+            return await _client.GetFromJsonAsync<ForecastResponse>(url);
         }
     }
 }

@@ -1,13 +1,13 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MeteoApp.MeteoItemPage"
              BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}"
              Title="{Binding Entry.CityName}">
-             
+
     <ScrollView>
         <VerticalStackLayout x:Name="MainLayout" Spacing="10" Margin="20, 30, 20, 20">
-            
+
             <Label Text="{Binding Entry.CityName}"
                    FontSize="45"
                    FontAttributes="Bold"
@@ -24,26 +24,26 @@
                    FontSize="100"
                    FontAttributes="Bold"
                    HorizontalOptions="Center"
-                   TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" 
+                   TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
                    Margin="0, -30, 0, 0" />
 
             <Label Text="{Binding Entry.WeatherDescription}"
                    FontSize="24"
                    TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray300}}"
                    HorizontalOptions="Center"
-                   TextTransform="Uppercase" 
-                   Margin="0, 0, 0, 40" /> 
-                   
-            <Border BackgroundColor="{AppThemeBinding Light={StaticResource LightSurface}, Dark={StaticResource DarkSurface}}" 
-                    Stroke="Transparent" 
+                   TextTransform="Uppercase"
+                   Margin="0, 0, 0, 40" />
+
+            <Border BackgroundColor="{AppThemeBinding Light={StaticResource LightSurface}, Dark={StaticResource DarkSurface}}"
+                    Stroke="Transparent"
                     Padding="20">
-                
+
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="20" />
                 </Border.StrokeShape>
 
                 <Grid ColumnDefinitions="*, *, *" RowDefinitions="Auto, Auto" RowSpacing="5">
-                    
+
                     <Label Grid.Row="0" Grid.Column="0" Text="Umidità" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" FontSize="14" HorizontalOptions="Center" />
                     <Label Grid.Row="0" Grid.Column="1" Text="Nuvole" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" FontSize="14" HorizontalOptions="Center" />
                     <Label Grid.Row="0" Grid.Column="2" Text="Vento" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" FontSize="14" HorizontalOptions="Center" />
@@ -51,8 +51,60 @@
                     <Label Grid.Row="1" Grid.Column="0" Text="{Binding Entry.Humidity, StringFormat='{0}%'}" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center" />
                     <Label Grid.Row="1" Grid.Column="1" Text="{Binding Entry.cloudiness, StringFormat='{0}%'}" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center" />
                     <Label Grid.Row="1" Grid.Column="2" Text="{Binding Entry.WindSpeed, StringFormat='{0} m/s'}" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center" />
-                    
+
                 </Grid>
+            </Border>
+
+            <!-- Previsioni 5 giorni -->
+            <Label Text="Prossimi 5 giorni"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                   Margin="0, 20, 0, 5" />
+
+            <Border BackgroundColor="{AppThemeBinding Light={StaticResource LightSurface}, Dark={StaticResource DarkSurface}}"
+                    Stroke="Transparent"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="20" />
+                </Border.StrokeShape>
+
+                <CollectionView ItemsSource="{Binding Forecast}"
+                                ItemsLayout="HorizontalList"
+                                HeightRequest="130">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <VerticalStackLayout Spacing="4"
+                                                 Padding="12, 10"
+                                                 HorizontalOptions="Center"
+                                                 WidthRequest="80">
+
+                                <Label Text="{Binding DayName}"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextTransform="Uppercase"
+                                       HorizontalOptions="Center"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+
+                                <Image Source="{Binding Icon}"
+                                       WidthRequest="44"
+                                       HeightRequest="44"
+                                       HorizontalOptions="Center" />
+
+                                <HorizontalStackLayout HorizontalOptions="Center" Spacing="4">
+                                    <Label Text="{Binding TempMax, StringFormat='{0}°'}"
+                                           FontSize="15"
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
+                                    <Label Text="{Binding TempMin, StringFormat='{0}°'}"
+                                           FontSize="15"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+                                </HorizontalStackLayout>
+
+                            </VerticalStackLayout>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
             </Border>
 
         </VerticalStackLayout>
