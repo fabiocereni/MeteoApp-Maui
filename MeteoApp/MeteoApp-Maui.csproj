@@ -11,7 +11,7 @@
 
         <ApplicationTitle>MeteoApp</ApplicationTitle>
 
-        <ApplicationId>com.companyname.meteoapp</ApplicationId>
+        <ApplicationId>com.companyname.meteoapp.android</ApplicationId>
         <ApplicationIdGuid>4d548f4b-c83d-4fae-9d2c-9cf8027f3d25</ApplicationIdGuid>
 
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
