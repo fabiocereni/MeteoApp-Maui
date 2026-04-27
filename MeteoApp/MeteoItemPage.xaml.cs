@@ -16,6 +16,7 @@ public partial class MeteoItemPage : ContentPage
         {
             _entry = value;
             OnPropertyChanged();
+            UpdateBlazorParameters();
             if (value != null)
                 _ = LoadForecastAsync();
         }
@@ -25,13 +26,39 @@ public partial class MeteoItemPage : ContentPage
     public ObservableCollection<ForecastDay> Forecast
     {
         get => _forecast;
-        set { _forecast = value; OnPropertyChanged(); }
+        set 
+        { 
+            _forecast = value; 
+            OnPropertyChanged(); 
+            UpdateBlazorParameters(); 
+        }
     }
 
     public MeteoItemPage()
     {
         InitializeComponent();
         BindingContext = this;
+    }
+
+    private void UpdateBlazorParameters()
+    {
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            if (blazorWebView != null && Entry != null)
+            {
+                blazorWebView.RootComponents.Clear();
+                blazorWebView.RootComponents.Add(new Microsoft.AspNetCore.Components.WebView.Maui.RootComponent
+                {
+                    Selector = "#app",
+                    ComponentType = typeof(MeteoDetails),
+                    Parameters = new Dictionary<string, object>
+                    {
+                        { "Entry", Entry },
+                        { "Forecast", Forecast }
+                    }
+                });
+            }
+        });
     }
 
     private async Task LoadForecastAsync()
@@ -65,6 +92,8 @@ public partial class MeteoItemPage : ContentPage
             Forecast.Clear();
             foreach (var day in days)
                 Forecast.Add(day);
+            
+            UpdateBlazorParameters(); 
         }
         catch (Exception ex)
         {
