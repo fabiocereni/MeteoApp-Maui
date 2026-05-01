@@ -1,5 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
     <PropertyGroup>
         <TargetFrameworks>net10.0-android;net10.0-ios</TargetFrameworks>
         <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('osx'))">net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
@@ -12,7 +11,7 @@
 
         <ApplicationTitle>MeteoApp</ApplicationTitle>
 
-        <ApplicationId>com.companyname.meteoapp</ApplicationId>
+        <ApplicationId>com.companyname.meteoapp.android</ApplicationId>
         <ApplicationIdGuid>4d548f4b-c83d-4fae-9d2c-9cf8027f3d25</ApplicationIdGuid>
 
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>

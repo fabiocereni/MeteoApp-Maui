@@ -403,3 +403,5 @@ FodyWeavers.xsd
 **/google-services.json
 
 
+MeteoApp/Platforms/Android/google-services.json
+MeteoApp/MeteoServer/serviceAccountKey.json

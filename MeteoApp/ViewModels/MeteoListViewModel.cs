@@ -1,8 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
-using Plugin.LocalNotification;
-using Plugin.LocalNotification.Core.Models;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System;
+using MeteoApp.Services;
 
 namespace MeteoApp
 {
@@ -11,22 +13,22 @@ namespace MeteoApp
         ObservableCollection<Entry> _entries;
         private readonly WeatherApiService _apiService;
         private bool _isRefreshing;
-
         private string _tempUnit;
-    public string TempUnit
-    {
-        get => _tempUnit;
-        set
+
+        public string TempUnit
         {
-            if (_tempUnit != value)
+            get => _tempUnit;
+            set
             {
-                _tempUnit = value;
-                SettingsService.SetTemperatureUnit(value);
-                OnPropertyChanged();
-                _ = LoadDataAsync(); 
+                if (_tempUnit != value)
+                {
+                    _tempUnit = value;
+                    SettingsService.SetTemperatureUnit(value);
+                    OnPropertyChanged();
+                    _ = LoadDataAsync(); 
+                }
             }
         }
-    }
 
         public bool IsRefreshing
         {
@@ -167,6 +169,9 @@ namespace MeteoApp
                     }
                     catch { }
                 }
+
+                // INVIA I DATI AL SERVER NODE.JS DOPO AVER CARICATO TUTTO
+                await RegisterTokenWithServerAsync();
             }
             finally
             {
@@ -184,13 +189,14 @@ namespace MeteoApp
                     var entry = CreateEntryFromWeather(weatherData);
                     await App.database.SaveEntryAsync(entry);
                     
-                    MainThread.BeginInvokeOnMainThread(() =>
+                    // Aggiungiamo la città alla lista aggiornando la UI
+                    await MainThread.InvokeOnMainThreadAsync(() =>
                     {
                         Entries.Add(entry);
                     });
 
-                    // Richiama il controllo per la notifica locale
-                    await CheckTemperatureAndNotifyAsync(entry);
+                    // AVVISA IL SERVER NODE.JS CHE C'È UNA NUOVA CITTÀ DA MONITORARE
+                    await RegisterTokenWithServerAsync();
                 }
                 else
                 {
@@ -208,6 +214,9 @@ namespace MeteoApp
         {
             await App.database.DeleteEntryAsync(entry);
             Entries.Remove(entry);
+            
+            // AVVISA IL SERVER NODE.JS CHE ABBIAMO ELIMINATO UNA CITTÀ
+            await RegisterTokenWithServerAsync();
         }
 
         private Entry CreateEntryFromWeather(WeatherResponse data)
@@ -236,40 +245,46 @@ namespace MeteoApp
             }
         }
 
-        private async Task CheckTemperatureAndNotifyAsync(Entry entry)
+        // METODO PER SINCRONIZZARE IL TELEFONO COL SERVER NODE.JS
+        private async Task RegisterTokenWithServerAsync()
         {
-            // Controlla i permessi usando il percorso corretto per la versione 14
-            if (await Plugin.LocalNotification.LocalNotificationCenter.Current.AreNotificationsEnabled() == false)
+            try
             {
-                await Plugin.LocalNotification.LocalNotificationCenter.Current.RequestNotificationPermission();
-            }
+#if ANDROID || IOS
+                // Verifica che Firebase sia pronto e ottieni il Token univoco del telefono
+                await Plugin.Firebase.CloudMessaging.CrossFirebaseCloudMessaging.Current.CheckIfValidAsync();
+                var token = await Plugin.Firebase.CloudMessaging.CrossFirebaseCloudMessaging.Current.GetTokenAsync();
 
-            Plugin.LocalNotification.Core.Models.NotificationRequest request = null;
+                // Estrai solo i nomi puliti delle città dalla tua lista (rimuovendo la nazione e la dicitura GPS)
+                var cityNames = Entries
+                    .Select(e => e.CityName.Split(',')[0].Replace(" (Current Location)", "").Trim())
+                    .Distinct()
+                    .ToList();
 
-            if (entry.Temperature < 0)
-            {
-                request = new Plugin.LocalNotification.Core.Models.NotificationRequest
+                var payload = new
                 {
-                    NotificationId = Math.Abs(entry.CityName.GetHashCode()),
-                    Title = "Allerta Freddo! ❄️",
-                    Description = $"{entry.CityName}, {entry.Temperature}°C allerta freddo",
-                    Schedule = new Plugin.LocalNotification.Core.Models.NotificationRequestSchedule { NotifyTime = DateTime.Now.AddSeconds(2) }
+                    token = token,
+                    cities = cityNames
                 };
-            }
-            else if (entry.Temperature > 25)
-            {
-                request = new Plugin.LocalNotification.Core.Models.NotificationRequest
-                {
-                    NotificationId = Math.Abs(entry.CityName.GetHashCode()),
-                    Title = "Allerta Caldo! ☀️",
-                    Description = $"{entry.CityName}, {entry.Temperature}°C allerta caldo",
-                    Schedule = new Plugin.LocalNotification.Core.Models.NotificationRequestSchedule { NotifyTime = DateTime.Now.AddSeconds(2) }
-                };
-            }
 
-            if (request != null)
+                // Invia i dati al tuo Server Node.js locale
+                using var client = new HttpClient();
+                
+                // Se sei su Android usa 10.0.2.2, se sei su iOS (Simulatore Mac) usa localhost
+                var url = DeviceInfo.Platform == DevicePlatform.Android 
+                    ? "http://10.0.2.2:3000/register" 
+                    : "http://localhost:3000/register";
+
+                var json = System.Text.Json.JsonSerializer.Serialize(payload);
+                var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+                await client.PostAsync(url, content);
+                System.Diagnostics.Debug.WriteLine($"Lista città inviata al server Node.js ({cityNames.Count} città)");
+#endif
+            }
+            catch (Exception ex)
             {
-                await Plugin.LocalNotification.LocalNotificationCenter.Current.Show(request);
+                System.Diagnostics.Debug.WriteLine($"Errore di sync con il server Node.js: {ex.Message}");
             }
         }
     }

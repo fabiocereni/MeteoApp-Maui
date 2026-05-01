@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>MeteoApp Blazor</title>
+    <base href="/" />
+    <style>
+        :root {
+            color-scheme: light dark; 
+        }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background-color: transparent; 
+            color: canvastext;
+            margin: 0; 
+            padding: 0;
+        }
+        .card { 
+            background-color: rgba(128, 128, 128, 0.15);
+            border-radius: 20px; 
+            padding: 20px; 
+            margin-bottom: 20px; 
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .grid-3 { 
+            display: flex; 
+            justify-content: space-between; 
+            text-align: center; 
+        }
+        .grid-3 > div {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        .label { color: gray; font-size: 14px; }
+        .value { font-size: 22px; font-weight: bold; }
+        
+        .scroll-x { 
+            display: flex; 
+            overflow-x: auto; 
+            padding: 15px 10px; 
+            gap: 15px;
+        }
+        .scroll-x::-webkit-scrollbar { display: none; } 
+        
+        .forecast-item { 
+            min-width: 80px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+            text-align: center; 
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+    <script src="_framework/blazor.webview.js"></script>
+</body>
+</html>

@@ -33,5 +33,12 @@
 
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Abbiamo bisogno della tua posizione per le previsioni meteo locali.</string>
+
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+
 </dict>
 </plist>

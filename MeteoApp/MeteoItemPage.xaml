@@ -1,60 +1,15 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:MeteoApp"
              x:Class="MeteoApp.MeteoItemPage"
              BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}"
              Title="{Binding Entry.CityName}">
-             
-    <ScrollView>
-        <VerticalStackLayout x:Name="MainLayout" Spacing="10" Margin="20, 30, 20, 20">
-            
-            <Label Text="{Binding Entry.CityName}"
-                   FontSize="45"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center"
-                   HorizontalTextAlignment="Center"
-                   TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
 
-            <Image Source="{Binding Entry.WeatherIcon}"
-                   WidthRequest="150"
-                   HeightRequest="150"
-                   HorizontalOptions="Center" />
+    <BlazorWebView x:Name="blazorWebView" HostPage="wwwroot/index.html">
+        <BlazorWebView.RootComponents>
+            <RootComponent Selector="#app" ComponentType="{x:Type local:MeteoDetails}" />
+        </BlazorWebView.RootComponents>
+    </BlazorWebView>
 
-            <Label Text="{Binding Entry.Temperature, StringFormat='{0}°'}"
-                   FontSize="100"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center"
-                   TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" 
-                   Margin="0, -30, 0, 0" />
-
-            <Label Text="{Binding Entry.WeatherDescription}"
-                   FontSize="24"
-                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray300}}"
-                   HorizontalOptions="Center"
-                   TextTransform="Uppercase" 
-                   Margin="0, 0, 0, 40" /> 
-                   
-            <Border BackgroundColor="{AppThemeBinding Light={StaticResource LightSurface}, Dark={StaticResource DarkSurface}}" 
-                    Stroke="Transparent" 
-                    Padding="20">
-                
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="20" />
-                </Border.StrokeShape>
-
-                <Grid ColumnDefinitions="*, *, *" RowDefinitions="Auto, Auto" RowSpacing="5">
-                    
-                    <Label Grid.Row="0" Grid.Column="0" Text="Umidità" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" FontSize="14" HorizontalOptions="Center" />
-                    <Label Grid.Row="0" Grid.Column="1" Text="Nuvole" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" FontSize="14" HorizontalOptions="Center" />
-                    <Label Grid.Row="0" Grid.Column="2" Text="Vento" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" FontSize="14" HorizontalOptions="Center" />
-
-                    <Label Grid.Row="1" Grid.Column="0" Text="{Binding Entry.Humidity, StringFormat='{0}%'}" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center" />
-                    <Label Grid.Row="1" Grid.Column="1" Text="{Binding Entry.cloudiness, StringFormat='{0}%'}" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center" />
-                    <Label Grid.Row="1" Grid.Column="2" Text="{Binding Entry.WindSpeed, StringFormat='{0} m/s'}" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center" />
-                    
-                </Grid>
-            </Border>
-
-        </VerticalStackLayout>
-    </ScrollView>
 </ContentPage>

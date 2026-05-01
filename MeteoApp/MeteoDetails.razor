@@ -1,0 +1,68 @@
+@using MeteoApp
+@using System.Collections.ObjectModel
+
+@if (Entry != null)
+{
+    <div style="padding: 20px; display: flex; flex-direction: column; align-items: center;">
+        
+        <h1 style="font-size: 45px; font-weight: bold; text-align: center; margin: 0;">@Entry.CityName</h1>
+        
+        <img src="@Entry.WeatherIcon" width="150" height="150" style="margin: 10px 0;" />
+
+        <h2 style="font-size: 100px; font-weight: bold; text-align: center; margin: -30px 0 0 0; line-height: 1;">@Math.Round(Entry.Temperature)°</h2>
+        
+        <h3 style="font-size: 24px; color: gray; text-align: center; text-transform: uppercase; margin: 10px 0 40px 0;">@Entry.WeatherDescription</h3>
+
+        <div class="card grid-3">
+            <div>
+                <div class="label">Umidità</div>
+                <div class="value">@Entry.Humidity%</div>
+            </div>
+            <div>
+                <div class="label">Nuvole</div>
+                <div class="value">@Entry.cloudiness%</div>
+            </div>
+            <div>
+                <div class="label">Vento</div>
+                <div class="value">@Entry.WindSpeed m/s</div>
+            </div>
+        </div>
+
+        <div style="width: 100%; text-align: left; margin-top: 10px;">
+            <h4 style="font-size: 18px; font-weight: bold; color: gray; margin: 0 0 10px 0;">Prossimi 5 giorni</h4>
+        </div>
+        
+        <div class="card scroll-x">
+            @if (Forecast != null)
+            {
+                @foreach (var day in Forecast)
+                {
+                    <div class="forecast-item">
+                        <div style="font-weight: bold; text-transform: uppercase; color: gray; font-size: 13px;">@day.DayName</div>
+                        
+                        <img src="@day.Icon" width="44" height="44" />
+                        
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span style="font-weight: bold; font-size: 15px;">@day.TempMax°</span>
+                            <span style="color: gray; font-size: 15px;">@day.TempMin°</span>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+}
+else
+{
+    <div style="display: flex; justify-content: center; align-items: center; height: 80vh; flex-direction: column;">
+        <h2 style="color: gray;">Sto caricando i dati meteo... 🌤️</h2>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public Entry Entry { get; set; }
+
+    [Parameter]
+    public ObservableCollection<ForecastDay> Forecast { get; set; }
+}
