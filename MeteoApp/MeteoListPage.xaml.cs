@@ -1,22 +1,19 @@
 ﻿namespace MeteoApp;
 
-public partial class MeteoListPage : Shell
+public partial class MeteoListPage : ContentPage
 {
     public Dictionary<string, Type> Routes { get; private set; } = new Dictionary<string, Type>();
+
     public MeteoListPage()
     {
         InitializeComponent();
-        
-        var viewModel = new MeteoListViewModel();
-        BindingContext = viewModel;
-        
+        BindingContext = new MeteoListViewModel();
         RegisterRoutes();
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-
         if (BindingContext is MeteoListViewModel viewModel)
         {
             await viewModel.LoadDataAsync();
@@ -25,6 +22,7 @@ public partial class MeteoListPage : Shell
 
     private void RegisterRoutes()
     {
+        if (Routes.Count > 0) return;
         Routes.Add("entrydetails", typeof(MeteoItemPage));
         Routes.Add("meteomap", typeof(MeteoMapPage));
 
@@ -32,7 +30,7 @@ public partial class MeteoListPage : Shell
             Routing.RegisterRoute(item.Key, item.Value);
     }
 
-    private void OnCardTapped(object sender, TappedEventArgs e)
+    private async void OnCardTapped(object sender, TappedEventArgs e)
     {
         if (e.Parameter is Entry entry)
         {
@@ -40,8 +38,7 @@ public partial class MeteoListPage : Shell
             {
                 { "Entry", entry }
             };
-
-            Shell.Current.GoToAsync($"entrydetails", navigationParameter);
+            await Shell.Current.GoToAsync("entrydetails", navigationParameter);
         }
     }
 
@@ -55,10 +52,12 @@ public partial class MeteoListPage : Shell
 
     private async void OnItemDeleted(object sender, EventArgs e)
     {
-        var menuItem = sender as MenuItem;
-        var entry = menuItem.CommandParameter as Entry;
-
-        var viewModel = BindingContext as MeteoListViewModel;
-        await viewModel.deleteCityAsync(entry);
+        if (sender is MenuItem menuItem && menuItem.CommandParameter is Entry entry)
+        {
+            if (BindingContext is MeteoListViewModel viewModel)
+            {
+                await viewModel.deleteCityAsync(entry);
+            }
+        }
     }
 }
