@@ -4,105 +4,102 @@
        xmlns:local="clr-namespace:MeteoApp"
        x:Class="MeteoApp.MeteoListPage"
        Title="Meteo App"
+       Shell.TitleColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+       Shell.ForegroundColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
        BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}">
 
+    <Shell.Resources>
+        <ResourceDictionary>
+            <local:TemperatureColorConverter x:Key="TempColorConverter" />
+        </ResourceDictionary>
+    </Shell.Resources>
+
+    <Shell.ToolbarItems>
+        <ToolbarItem Text="Add" 
+                     Clicked="OnItemAdded" 
+                     Order="Primary" 
+                     Priority="0" />
+        <ToolbarItem Text="{Binding TempUnit, StringFormat='Unità: {0}'}" 
+                     Command="{Binding ToggleUnitCommand}" 
+                     Order="Primary" 
+                     Priority="1" />
+    </Shell.ToolbarItems>
+
     <ShellContent Title="Meteo App">
-        <ContentPage Title="Meteo App"
-                     BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}">
+        <Grid BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}">
+            <RefreshView IsRefreshing="{Binding IsRefreshing}" 
+                         Command="{Binding RefreshCommand}">
+                
+                <CollectionView x:Name="zlistView" 
+                                Margin="15, 20, 15, 0" 
+                                SelectionMode="None" 
+                                ItemsSource="{Binding Entries}"
+                                BackgroundColor="Transparent">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <SwipeView>
+                                <SwipeView.RightItems>
+                                    <SwipeItems>
+                                        <SwipeItem Text="Delete" 
+                                                   BackgroundColor="Red"
+                                                   Clicked="OnItemDeleted"
+                                                   CommandParameter="{Binding .}" />
+                                    </SwipeItems>
+                                </SwipeView.RightItems>
 
-            <ContentPage.Resources>
-                <ResourceDictionary>
-                    <local:TemperatureColorConverter x:Key="TempColorConverter" />
-                </ResourceDictionary>
-            </ContentPage.Resources>
+                                <Frame BackgroundColor="{AppThemeBinding Light={StaticResource LightSurface}, Dark={StaticResource DarkSurface}}" 
+                                       CornerRadius="20" 
+                                       Margin="0, 0, 0, 15" 
+                                       Padding="20, 15"
+                                       HasShadow="False"
+                                       BorderColor="Transparent">
+                                    <Frame.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnCardTapped" 
+                                                               CommandParameter="{Binding .}" />
+                                    </Frame.GestureRecognizers>
+                                    <Frame.Shadow>
+                                        <Shadow Brush="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Black}}" 
+                                                Offset="5, 5" 
+                                                Radius="10" 
+                                                Opacity="0.5" />
+                                    </Frame.Shadow>
 
-            <ContentPage.ToolbarItems>
-                <ToolbarItem Text="Add" 
-             Clicked="OnItemAdded" 
-             Order="Primary" 
-             Priority="0" />
-<ToolbarItem Text="{Binding TempUnit, StringFormat='Unità: {0}'}" 
-             Command="{Binding ToggleUnitCommand}" 
-             Order="Primary" 
-             Priority="1" />
-            </ContentPage.ToolbarItems>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
 
-            <Grid>
-                <RefreshView IsRefreshing="{Binding IsRefreshing}" 
-                             Command="{Binding RefreshCommand}">
-                    <CollectionView x:Name="zlistView" 
-                                    Margin="15, 20, 15, 0" 
-                                    SelectionMode="None" 
-                                    ItemsSource="{Binding Entries}"
-                                    BackgroundColor="Transparent">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <SwipeView>
-                                    <SwipeView.RightItems>
-                                        <SwipeItems>
-                                            <SwipeItem Text="Delete" 
-                                                       BackgroundColor="Red"
-                                                       Clicked="OnItemDeleted"
-                                                       CommandParameter="{Binding .}" />
-                                        </SwipeItems>
-                                    </SwipeView.RightItems>
-
-                                    <Frame BackgroundColor="{AppThemeBinding Light={StaticResource LightSurface}, Dark={StaticResource DarkSurface}}" 
-                                           CornerRadius="20" 
-                                           Margin="0, 0, 0, 15" 
-                                           Padding="20, 15"
-                                           HasShadow="False"
-                                           BorderColor="Transparent">
-
-                                        <Frame.GestureRecognizers>
-                                            <TapGestureRecognizer Tapped="OnCardTapped" 
-                                                                  CommandParameter="{Binding .}" />
-                                        </Frame.GestureRecognizers>
-
-                                        <Frame.Shadow>
-                                            <Shadow Brush="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Black}}" 
-                                                    Offset="5, 5" 
-                                                    Radius="10" 
-                                                    Opacity="0.5" />
-                                        </Frame.Shadow>
-
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
-
-                                            <StackLayout Grid.Column="0" VerticalOptions="Center">
-                                                <Label Text="{Binding CityName}" 
-                                                       FontSize="22" 
-                                                       FontAttributes="Bold" 
-                                                       TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
-                                                <Label Text="{Binding WeatherDescription}" 
-                                                       FontSize="14" 
-                                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray300}}" 
-                                                       Margin="0, 5, 0, 0"/>
-                                            </StackLayout>
-
-                                            <Label Grid.Column="1" 
-                                                   Text="{Binding Temperature, StringFormat='{0}°'}" 
-                                                   VerticalTextAlignment="Center" 
-                                                   FontSize="48" 
+                                        <StackLayout Grid.Column="0" VerticalOptions="Center">
+                                            <Label Text="{Binding CityName}" 
+                                                   FontSize="22" 
                                                    FontAttributes="Bold" 
-                                                   TextColor="{Binding Temperature, Converter={StaticResource TempColorConverter}}" />
-                                        </Grid>
-                                    </Frame>
-                                </SwipeView>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </RefreshView>
+                                                   TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
+                                            <Label Text="{Binding WeatherDescription}" 
+                                                   FontSize="14" 
+                                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray300}}" 
+                                                   Margin="0, 5, 0, 0"/>
+                                        </StackLayout>
 
-                <ActivityIndicator IsRunning="{Binding IsBusy}" 
-                                   IsVisible="{Binding IsBusy}"
-                                   Color="{StaticResource WeatherRainy}"
-                                   HorizontalOptions="Center" 
-                                   VerticalOptions="Center" />
-            </Grid>
-        </ContentPage>
+                                        <Label Grid.Column="1" 
+                                               Text="{Binding Temperature, StringFormat='{0}°'}" 
+                                               VerticalTextAlignment="Center" 
+                                               FontSize="48" 
+                                               FontAttributes="Bold" 
+                                               TextColor="{Binding Temperature, Converter={StaticResource TempColorConverter}}" />
+                                    </Grid>
+                                </Frame>
+                            </SwipeView>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </RefreshView>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" 
+                               IsVisible="{Binding IsBusy}"
+                               Color="{StaticResource WeatherRainy}"
+                               HorizontalOptions="Center" 
+                               VerticalOptions="Center" />
+        </Grid>
     </ShellContent>
 </Shell>
