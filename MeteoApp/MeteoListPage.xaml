@@ -78,12 +78,18 @@
                                                Margin="0, 5, 0, 0"/>
                                     </StackLayout>
 
-                                    <Label Grid.Column="1" 
-                                           Text="{Binding Temperature, StringFormat='{0}°'}" 
-                                           VerticalTextAlignment="Center" 
-                                           FontSize="48" 
-                                           FontAttributes="Bold" 
-                                           TextColor="{Binding Temperature, Converter={StaticResource TempColorConverter}}" />
+                                    <StackLayout Grid.Column="1" Orientation="Horizontal" VerticalOptions="Center">
+                                        <Label Text="{Binding Temperature}"
+                                               FontSize="48"
+                                               FontAttributes="Bold"
+                                               TextColor="{Binding Temperature, Converter={StaticResource TempColorConverter}}" />
+                                               
+                                        <Label Text="{Binding Source={RelativeSource AncestorType={x:Type local:MeteoListViewModel}}, Path=TempUnit, StringFormat='°{0}'}"
+                                               FontSize="48"
+                                               FontAttributes="Bold"
+                                               TextColor="{Binding Temperature, Converter={StaticResource TempColorConverter}}" />
+                                    </StackLayout>
+                                    
                                 </Grid>
                             </Frame>
                         </SwipeView>

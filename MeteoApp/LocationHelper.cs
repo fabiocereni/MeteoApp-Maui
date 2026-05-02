@@ -4,20 +4,28 @@ namespace MeteoApp
     {
         public async Task<Location> getCurrentLocationAsync()
         {
-            var permissions = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
+            var permissions = await MainThread.InvokeOnMainThreadAsync(
+                () => Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>());
 
             if (permissions != PermissionStatus.Granted)
             {
-                await App.Current.MainPage.DisplayAlert("Permission Denied", "Location permission is required to get the current location.", "OK");
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                    App.Current.MainPage.DisplayAlert(
+                        "Permission Denied",
+                        "Location permission is required to get the current location.",
+                        "OK"));
 
-                permissions = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
+                permissions = await MainThread.InvokeOnMainThreadAsync(
+                    () => Permissions.RequestAsync<Permissions.LocationWhenInUse>());
 
                 if (permissions != PermissionStatus.Granted)
                 {
-                    if (DeviceInfo.Platform == DevicePlatform.iOS || DeviceInfo.Platform == DevicePlatform.MacCatalyst)
-                        await App.Current.MainPage.DisplayAlert("Location Required", "Location is required to share it. Please enable location for this app in Settings.", "OK");
-                    else
-                        await App.Current.MainPage.DisplayAlert("Location Required", "Location is required to share it. We'll ask again next time.", "OK");
+                    var msg = (DeviceInfo.Platform == DevicePlatform.iOS || DeviceInfo.Platform == DevicePlatform.MacCatalyst)
+                        ? "Please enable location for this app in Settings."
+                        : "We'll ask again next time.";
+
+                    await MainThread.InvokeOnMainThreadAsync(() =>
+                        App.Current.MainPage.DisplayAlert("Location Required", msg, "OK"));
 
                     return null;
                 }
@@ -26,8 +34,7 @@ namespace MeteoApp
             try
             {
                 var request = new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(10));
-                var location = await Geolocation.Default.GetLocationAsync(request);
-                return location;
+                return await Geolocation.Default.GetLocationAsync(request);
             }
             catch (Exception ex)
             {

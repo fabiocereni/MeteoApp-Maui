@@ -36,9 +36,9 @@ namespace MeteoApp
             return await _client.GetFromJsonAsync<WeatherResponse>(url);
         }
 
-        public async Task<WeatherResponse> GetWeatherByLocationAsync(double lat, double lon)
+        public async Task<WeatherResponse> GetWeatherByLocationAsync(double lat, double lon, string unit = "metric")
         {
-            string url = $"{_baseUrl}?lat={lat}&lon={lon}&appid={_apiKey}&units=metric&lang=it";
+            string url = $"{_baseUrl}?lat={lat}&lon={lon}&appid={_apiKey}&units={unit}&lang=it";
             return await _client.GetFromJsonAsync<WeatherResponse>(url);
         }
 

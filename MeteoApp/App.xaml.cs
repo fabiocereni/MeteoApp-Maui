@@ -29,7 +29,7 @@ public partial class App : Application
     
         var unit = Preferences.Get("temp_unit", "C");
 
-        MainPage = new MeteoListPage();
+        MainPage = new AppShell();
     }
 
  

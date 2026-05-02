@@ -1,4 +1,4 @@
-﻿using SQLite;
+using SQLite;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -15,6 +15,9 @@ namespace MeteoApp
             get => _cityName;
             set { _cityName = value; OnPropertyChanged(); }
         }
+
+        [Ignore]
+        public double TemperatureCelsius { get; set; }
 
         private double _temperature;
         public double Temperature

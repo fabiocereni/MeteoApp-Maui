@@ -14,6 +14,7 @@ namespace MeteoApp
         private readonly WeatherApiService _apiService;
         private bool _isRefreshing;
         private string _tempUnit;
+        private string ApiUnit => _tempUnit == "F" ? "imperial" : "metric";
 
         public string TempUnit
         {
@@ -25,7 +26,8 @@ namespace MeteoApp
                     _tempUnit = value;
                     SettingsService.SetTemperatureUnit(value);
                     OnPropertyChanged();
-                    _ = LoadDataAsync(); 
+                    Entries.Clear();
+                    _ = LoadDataAsync();
                 }
             }
         }
@@ -37,6 +39,7 @@ namespace MeteoApp
         }
 
         public Command RefreshCommand { get; }
+        public Command ToggleUnitCommand { get; }
 
         public ObservableCollection<Entry> Entries
         {
@@ -49,6 +52,12 @@ namespace MeteoApp
             Entries = new ObservableCollection<Entry>();
             _apiService = new WeatherApiService();
             RefreshCommand = new Command(async () => await RefreshDataAsync());
+            ToggleUnitCommand = new Command(() =>
+            {
+                TempUnit = TempUnit == "C" ? "F" : "C";
+            });
+            TempUnit = SettingsService.GetTemperatureUnit();
+            System.Diagnostics.Debug.WriteLine($"✓ ViewModel inizializzato. TempUnit={TempUnit}");
         }
 
         private async Task RefreshDataAsync()
@@ -83,7 +92,7 @@ namespace MeteoApp
                     {
                         try
                         {
-                            var weatherData = await _apiService.GetWeatherByCityAsync(city);
+                            var weatherData = await _apiService.GetWeatherByCityAsync(city, ApiUnit);
                             if (weatherData != null)
                             {
                                 var entry = CreateEntryFromWeather(weatherData);
@@ -100,6 +109,7 @@ namespace MeteoApp
                     {
                         foreach (var entry in existingEntries)
                         {
+                            entry.TemperatureCelsius = entry.Temperature;
                             Entries.Add(entry);
                         }
                     }
@@ -109,14 +119,15 @@ namespace MeteoApp
                         try
                         {
                             string queryName = entry.CityName.Split(',')[0].Trim();
-                            var weatherData = await _apiService.GetWeatherByCityAsync(queryName);
+                            var weatherData = await _apiService.GetWeatherByCityAsync(queryName, ApiUnit);
                             if (weatherData != null)
                             {
                                 var updated = CreateEntryFromWeather(weatherData);
-                                
+
                                 var entryToUpdate = Entries.FirstOrDefault(e => e.Id == entry.Id);
                                 if (entryToUpdate != null)
                                 {
+                                    entryToUpdate.TemperatureCelsius = updated.TemperatureCelsius;
                                     entryToUpdate.Temperature = updated.Temperature;
                                     entryToUpdate.WeatherDescription = updated.WeatherDescription;
                                     entryToUpdate.WeatherIcon = updated.WeatherIcon;
@@ -142,7 +153,7 @@ namespace MeteoApp
                 {
                     try
                     {
-                        var weatherDataGps = await _apiService.GetWeatherByLocationAsync(location.Latitude, location.Longitude);
+                        var weatherDataGps = await _apiService.GetWeatherByLocationAsync(location.Latitude, location.Longitude, ApiUnit);
                         if (weatherDataGps != null)
                         {
                             MainThread.BeginInvokeOnMainThread(() =>
@@ -153,6 +164,7 @@ namespace MeteoApp
                                 var existingGps = Entries.FirstOrDefault(e => e.CityName.Contains("(Current Location)"));
                                 if (existingGps != null)
                                 {
+                                    existingGps.TemperatureCelsius = gpsEntry.TemperatureCelsius;
                                     existingGps.Temperature = gpsEntry.Temperature;
                                     existingGps.WeatherDescription = gpsEntry.WeatherDescription;
                                     existingGps.WeatherIcon = gpsEntry.WeatherIcon;
@@ -170,7 +182,6 @@ namespace MeteoApp
                     catch { }
                 }
 
-                // INVIA I DATI AL SERVER NODE.JS DOPO AVER CARICATO TUTTO
                 await RegisterTokenWithServerAsync();
             }
             finally
@@ -183,19 +194,17 @@ namespace MeteoApp
         {
             try
             {
-                var weatherData = await _apiService.GetWeatherByCityAsync(cityName);
+                var weatherData = await _apiService.GetWeatherByCityAsync(cityName, ApiUnit);
                 if (weatherData != null)
                 {
                     var entry = CreateEntryFromWeather(weatherData);
                     await App.database.SaveEntryAsync(entry);
                     
-                    // Aggiungiamo la città alla lista aggiornando la UI
                     await MainThread.InvokeOnMainThreadAsync(() =>
                     {
                         Entries.Add(entry);
                     });
 
-                    // AVVISA IL SERVER NODE.JS CHE C'È UNA NUOVA CITTÀ DA MONITORARE
                     await RegisterTokenWithServerAsync();
                 }
                 else
@@ -215,7 +224,6 @@ namespace MeteoApp
             await App.database.DeleteEntryAsync(entry);
             Entries.Remove(entry);
             
-            // AVVISA IL SERVER NODE.JS CHE ABBIAMO ELIMINATO UNA CITTÀ
             await RegisterTokenWithServerAsync();
         }
 
@@ -224,6 +232,8 @@ namespace MeteoApp
             return new Entry
             {
                 CityName = $"{data.Name}, {GetCountryName(data.Sys.Country)}",
+                TemperatureCelsius = _tempUnit == "C" ? Math.Round(data.Main.Temp) : Math.Round((data.Main.Temp - 32) * 5.0 / 9.0),
+                
                 Temperature = Math.Round(data.Main.Temp),
                 WeatherDescription = data.Weather[0].Description,
                 Humidity = data.Main.Humidity,
@@ -245,17 +255,18 @@ namespace MeteoApp
             }
         }
 
-        // METODO PER SINCRONIZZARE IL TELEFONO COL SERVER NODE.JS
         private async Task RegisterTokenWithServerAsync()
         {
             try
             {
 #if ANDROID || IOS
-                // Verifica che Firebase sia pronto e ottieni il Token univoco del telefono
+                if (DeviceInfo.DeviceType == DeviceType.Virtual)
+                    return;
+
                 await Plugin.Firebase.CloudMessaging.CrossFirebaseCloudMessaging.Current.CheckIfValidAsync();
                 var token = await Plugin.Firebase.CloudMessaging.CrossFirebaseCloudMessaging.Current.GetTokenAsync();
+                if (string.IsNullOrEmpty(token)) return;
 
-                // Estrai solo i nomi puliti delle città dalla tua lista (rimuovendo la nazione e la dicitura GPS)
                 var cityNames = Entries
                     .Select(e => e.CityName.Split(',')[0].Replace(" (Current Location)", "").Trim())
                     .Distinct()
@@ -267,10 +278,8 @@ namespace MeteoApp
                     cities = cityNames
                 };
 
-                // Invia i dati al tuo Server Node.js locale
                 using var client = new HttpClient();
                 
-                // Se sei su Android usa 10.0.2.2, se sei su iOS (Simulatore Mac) usa localhost
                 var url = DeviceInfo.Platform == DevicePlatform.Android 
                     ? "http://10.0.2.2:3000/register" 
                     : "http://localhost:3000/register";
