@@ -6,7 +6,7 @@ namespace MeteoApp
     {
         private readonly HttpClient _client;
         private string _baseUrl;
-        private readonly string _apiKey = "81f6fb625f1378f589f0ae8161bcb951";
+        private readonly string _apiKey = Secrets.OpenWeatherApiKey;
 
         public WeatherApiService()
         {

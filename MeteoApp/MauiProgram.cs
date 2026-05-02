@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using MeteoApp.Services;
 using Plugin.LocalNotification;
 
 #if IOS
@@ -25,6 +26,7 @@ public static class MauiProgram
             });
 
         builder.Services.AddMauiBlazorWebView();
+        builder.Services.AddSingleton<AppwriteService>();
 
 #if DEBUG
         builder.Logging.AddDebug();

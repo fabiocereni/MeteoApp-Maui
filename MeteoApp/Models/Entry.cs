@@ -9,6 +9,8 @@ namespace MeteoApp
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
+        public string AppwriteId { get; set; }
+
         private string _cityName;
         public string CityName
         {

@@ -12,6 +12,7 @@ namespace MeteoApp
     {
         ObservableCollection<Entry> _entries;
         private readonly WeatherApiService _apiService;
+        private readonly AppwriteService _appwriteService;
         private bool _isRefreshing;
         private string _tempUnit;
         private string ApiUnit => _tempUnit == "F" ? "imperial" : "metric";
@@ -51,6 +52,7 @@ namespace MeteoApp
         {
             Entries = new ObservableCollection<Entry>();
             _apiService = new WeatherApiService();
+            _appwriteService = new AppwriteService();
             RefreshCommand = new Command(async () => await RefreshDataAsync());
             ToggleUnitCommand = new Command(() =>
             {
@@ -198,8 +200,11 @@ namespace MeteoApp
                 if (weatherData != null)
                 {
                     var entry = CreateEntryFromWeather(weatherData);
+
+                    entry.AppwriteId = await _appwriteService.AddCityAsync(entry.CityName);
+
                     await App.database.SaveEntryAsync(entry);
-                    
+
                     await MainThread.InvokeOnMainThreadAsync(() =>
                     {
                         Entries.Add(entry);
@@ -221,9 +226,12 @@ namespace MeteoApp
 
         public async Task deleteCityAsync(Entry entry)
         {
+            if (!string.IsNullOrEmpty(entry.AppwriteId))
+                await _appwriteService.DeleteCityAsync(entry.AppwriteId);
+
             await App.database.DeleteEntryAsync(entry);
             Entries.Remove(entry);
-            
+
             await RegisterTokenWithServerAsync();
         }
 
