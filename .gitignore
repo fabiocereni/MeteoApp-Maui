@@ -405,3 +405,5 @@ FodyWeavers.xsd
 
 MeteoApp/Platforms/Android/google-services.json
 MeteoApp/MeteoServer/serviceAccountKey.json
+
+MeteoApp/Secrets.cs
