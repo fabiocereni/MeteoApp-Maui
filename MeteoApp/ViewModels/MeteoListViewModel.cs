@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
@@ -162,7 +162,7 @@ namespace MeteoApp
                             {
                                 var gpsEntry = CreateEntryFromWeather(weatherDataGps);
                                 gpsEntry.CityName += " (Current Location)";
-                                
+
                                 var existingGps = Entries.FirstOrDefault(e => e.CityName.Contains("(Current Location)"));
                                 if (existingGps != null)
                                 {
@@ -241,7 +241,7 @@ namespace MeteoApp
             {
                 CityName = $"{data.Name}, {GetCountryName(data.Sys.Country)}",
                 TemperatureCelsius = _tempUnit == "C" ? Math.Round(data.Main.Temp) : Math.Round((data.Main.Temp - 32) * 5.0 / 9.0),
-                
+
                 Temperature = Math.Round(data.Main.Temp),
                 WeatherDescription = data.Weather[0].Description,
                 Humidity = data.Main.Humidity,
@@ -268,9 +268,6 @@ namespace MeteoApp
             try
             {
 #if ANDROID || IOS
-                if (DeviceInfo.DeviceType == DeviceType.Virtual)
-                    return;
-
                 await Plugin.Firebase.CloudMessaging.CrossFirebaseCloudMessaging.Current.CheckIfValidAsync();
                 var token = await Plugin.Firebase.CloudMessaging.CrossFirebaseCloudMessaging.Current.GetTokenAsync();
                 if (string.IsNullOrEmpty(token)) return;
@@ -286,10 +283,12 @@ namespace MeteoApp
                     cities = cityNames
                 };
 
-                using var client = new HttpClient();
-                
-                var url = DeviceInfo.Platform == DevicePlatform.Android 
-                    ? "http://10.0.2.2:3000/register" 
+                var handler = new HttpClientHandler();
+                using var client = new HttpClient(handler);
+                client.DefaultRequestHeaders.ConnectionClose = true;
+
+                var url = DeviceInfo.Platform == DevicePlatform.Android
+                    ? "http://10.0.2.2:3000/register"
                     : "http://localhost:3000/register";
 
                 var json = System.Text.Json.JsonSerializer.Serialize(payload);

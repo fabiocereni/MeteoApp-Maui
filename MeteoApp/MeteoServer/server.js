@@ -16,6 +16,7 @@ const API_KEY = "81f6fb625f1378f589f0ae8161bcb951";
 let userSubscriptions = {};
 
 app.post('/register', (req, res) => {
+    console.log('📨 POST /register ricevuto, body:', JSON.stringify(req.body));
     const { token, cities } = req.body;
     if(token && cities) {
         userSubscriptions[token] = cities;
@@ -28,7 +29,7 @@ app.post('/register', (req, res) => {
 
 cron.schedule('*/10 * * * * *', async () => {
     console.log("⏱️ Avvio controllo meteo programmato...");
-    
+
     for (const [token, cities] of Object.entries(userSubscriptions)) {
         for (const city of cities) {
             try {
@@ -65,7 +66,7 @@ cron.schedule('*/10 * * * * *', async () => {
 });
 
 const PORT = 3000;
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Server meteo in esecuzione sulla porta ${PORT}`);
     console.log(`Il sistema controllerà le temperature ogni 10 sec in automatico.`);
 });

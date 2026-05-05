@@ -1,11 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using MeteoApp.Services;
 using Plugin.LocalNotification;
 
 #if IOS
 using Plugin.Firebase.Core.Platforms.iOS;
-#elif ANDROID
-using Plugin.Firebase.Core.Platforms.Android;
 #endif
 
 namespace MeteoApp;
@@ -35,8 +33,6 @@ public static class MauiProgram
 
 #if IOS
         CrossFirebase.Initialize();
-#elif ANDROID
-        CrossFirebase.Initialize(() => Microsoft.Maui.ApplicationModel.Platform.CurrentActivity);
 #endif
 
         return builder.Build();
