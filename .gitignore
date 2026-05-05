@@ -407,3 +407,7 @@ MeteoApp/Platforms/Android/google-services.json
 MeteoApp/MeteoServer/serviceAccountKey.json
 
 MeteoApp/Secrets.cs
+
+# Allow release folder for APK distribution
+!release/
+!release/**
